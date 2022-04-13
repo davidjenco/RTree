@@ -1,47 +1,51 @@
-#
-# Project specific excludes
-#
-db
-tomcat
+# Created by https://www.toptal.com/developers/gitignore/api/c++
+# Edit at https://www.toptal.com/developers/gitignore?templates=c++
 
-#
-# Default excludes
-#
+### C++ ###
+# Prerequisites
+*.d
 
-# Binaries
-*.7z
-*.dmg
-*.gz
-*.iso
-*.jar
-*.rar
-*.tar
-*.zip
-*.war
-*.ear
-*.sar
-*.class
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
 
-# Maven 
-target/
+# Precompiled Headers
+*.gch
+*.pch
 
-# IntelliJ project files 
-*.iml
-*.iws
-*.ipr
-.idea/
+# Linker files
+*.ilk
+
+# Debugger Files
+*.pdb
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# End of https://www.toptal.com/developers/gitignore/api/c++
 
 
-  
-.gradle
-**/build/
-!src/**/build/
+###############################################################################################################################################################################################################
 
-# Ignore Gradle GUI config
-gradle-app.setting
 
-# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
-!gradle-wrapper.jar
-
-# Cache of project
-.gradletasknamecache
+**/cmake-build-debug
+**/.idea/
