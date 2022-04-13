@@ -3,4 +3,4 @@ project(RTree_C__)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(RTree_C__ src/main.cpp src/RTree.cpp src/RTree.h src/DataGenerator.cpp src/DataGenerator.h src/CommandHandler.cpp src/CommandHandler.h)
+add_executable(RTree_C__ src/main.cpp src/RTree.cpp src/RTree.h src/DataGenerator.cpp src/DataGenerator.h src/CommandHandler.cpp src/CommandHandler.h src/Application.cpp src/Application.h src/Action.h)
