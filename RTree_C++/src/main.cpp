@@ -10,6 +10,8 @@ int main(int argc, char * argv []) {
         treeApp.start();
     } catch (invalid_argument & invalidArgument){
         CommandHandler::printHelpTable(argv[0]);
+    } catch (out_of_range & outOfRangeOfCommands){ //thrown when input is not found in command map in CommandHandler
+        CommandHandler::printHelpTable(argv[0]);
     }
 
     return 0;

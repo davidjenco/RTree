@@ -20,7 +20,7 @@ public:
     ///Parses input and reacts on different actions
     void dealWithInput();
 
-    int sequenceSearch();
+    void sequenceSearch();
 };
 
 

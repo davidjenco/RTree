@@ -10,8 +10,6 @@ CommandHandler::CommandHandler() {
 }
 
 int CommandHandler::getAction(const string & binary, const string & cmd) {
-    if (!commands.contains(cmd))
-        printHelpTable(binary);
     return commands.at(cmd);
 }
 
