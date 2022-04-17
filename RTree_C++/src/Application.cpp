@@ -25,9 +25,9 @@ void Application::dealWithInput() {
                 throw invalid_argument("Invalid argument content or count");
 
             dimension = stoi(argv[3]);
-            DataGenerator generator(dimension);
+            DataGenerator generator(dimension, dataFileName);
             generator.generate();
-            //TODO buildTree();
+            buildTree();
             break;
         }
         case SEARCH: {
@@ -60,7 +60,7 @@ void Application::sequenceSearch() {
 
     vector<int> foundIds;
 
-    ifstream ifs("../data.txt");
+    ifstream ifs(dataFileName);
     while (!ifs.eof()){
         int id, dim1, dim2, dim3;
         ifs >> id >> dim1 >> dim2 >> dim3;
@@ -74,4 +74,8 @@ void Application::sequenceSearch() {
     for (const auto & id : foundIds) {
         cout << "Found " << id << endl;
     }
+}
+
+void Application::buildTree() {
+
 }

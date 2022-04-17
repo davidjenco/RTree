@@ -10,6 +10,7 @@ private:
     int argc;
     char ** argv;
     CommandHandler commandHandler;
+    std::string dataFileName = "../data.txt"; //careful on file placement --> relative path depends on binary path (now in cmake-build-debug)
 
 public:
     Application(int argc, char **argv);
@@ -20,7 +21,10 @@ public:
     ///Parses input and reacts on different actions
     void dealWithInput();
 
+    ///Makes sequence range search in data file (for comparing to R-tree queries)
     void sequenceSearch();
+
+    void buildTree();
 };
 
 

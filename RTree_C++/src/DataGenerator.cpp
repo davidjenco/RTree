@@ -4,10 +4,11 @@
 
 using namespace std;
 
-DataGenerator::DataGenerator(int dimension) : dimension(dimension) {}
+DataGenerator::DataGenerator(int dimension, const string &dataFileName) : dimension(dimension),
+                                                                          dataFileName(dataFileName) {}
 
 void DataGenerator::generate() {
-    auto dataOutFile = ofstream("../data.txt"); //careful on file placement --> relative path depends on binary path (now in cmake-build-debug)
+    auto dataOutFile = ofstream(dataFileName);
     for (int i = 0; i < numberOfEntries; ++i) {
         dataOutFile << i << " ";//TODO později bych asi přešel na binární soubor, zatím takto pro přehlednost
         for (int j = 0; j < dimension; ++j) { //value for each dimension
