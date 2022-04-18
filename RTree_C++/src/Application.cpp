@@ -27,10 +27,10 @@ void Application::dealWithInput() {
 
             dimension = stoi(argv[3]);
 
-            auto tree = RTree(dimension); //TODO spíš s každým vygenerovaným novým datem udělat insert do stormu zrovna
+            auto tree = RTree(dimension);
             tree.serializeInit();
 
-            DataGenerator generator(dimension, dataFileName);
+            DataGenerator generator(dimension, dataFileName, tree);
             generator.generate();
 
             break;

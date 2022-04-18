@@ -1,23 +1,29 @@
 #include <random>
 #include <fstream>
+#include <utility>
 #include "DataGenerator.h"
 
 using namespace std;
 
-DataGenerator::DataGenerator(int dimension, const string &dataFileName) : dimension(dimension),
-                                                                          dataFileName(dataFileName) {}
+DataGenerator::DataGenerator(int dimension, string dataFileName, const RTree &tree) : dimension(dimension),
+                                                                                             dataFileName(std::move(dataFileName)),
+                                                                                             tree(tree) {}
 
 void DataGenerator::generate() {
     auto dataOutFile = ofstream(dataFileName);
     for (int i = 0; i < numberOfEntries; ++i) {
-        dataOutFile << i << " ";//TODO později bych asi přešel na binární soubor, zatím takto pro přehlednost
+        vector<int> ranges;
+        dataOutFile << i << " ";
         for (int j = 0; j < dimension; ++j) { //value for each dimension
+            int random = this->getRandomInt();
+            ranges.emplace_back(random);
             if (j == dimension - 1) {
-                dataOutFile << this->getRandomInt() << endl;
+                dataOutFile << random << endl;
                 break;
             }
-            dataOutFile << this->getRandomInt() << " ";
+            dataOutFile << random << " ";
         }
+        //TODO insert
     }
 }
 
