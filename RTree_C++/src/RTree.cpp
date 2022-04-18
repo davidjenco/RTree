@@ -40,36 +40,3 @@ uint32_t RTree::calculateMaxLeafNodeEntries() const{
     uint32_t dummyEntrySize = config.dimension * sizeof(int32_t) + sizeof(uint32_t);
     return result / dummyEntrySize;
 }
-
-void RTree::write32Uint(ofstream & outFile, uint32_t data) {
-//    for (int i = 0; i < sizeof(data); ++i) {
-//        char tmp = 0;
-//        outFile.put(tmp | data >> i * 8);
-//    }
-    outFile.write( (char *) & data, sizeof(data) );
-    if (outFile.fail())
-        throw runtime_error("Error while writing to file");
-}
-
-void RTree::read32Uint(ifstream & inFile, uint32_t & readUint) {
-    uint32_t result = 0;
-//    for (int i = 0; i < sizeof(readUint); ++i) {
-//        result |= ((unsigned char)inFile.get()) << i * 8;
-//    }
-    inFile.read( (char *) & result, sizeof(result) );
-    if (inFile.fail())
-        throw runtime_error("Error while reading from file");
-    readUint = result;
-}
-
-void RTree::justTest() {
-    ifstream ifs (config.treeFileName);
-    uint32_t one, two, three, four, five, six;
-    read32Uint(ifs, one);
-    read32Uint(ifs, two);
-    read32Uint(ifs, three);
-    read32Uint(ifs, four);
-    read32Uint(ifs, five);
-    read32Uint(ifs, six);
-    cout << one << " " << two << " " << three << " " << four << " " << five << " " << six << endl;
-}
