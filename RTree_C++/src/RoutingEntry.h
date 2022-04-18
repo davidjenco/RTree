@@ -14,4 +14,9 @@ struct RoutingEntry{
 
     ///Reads one entry from binary file
     static void readEntry(std::ifstream & treeIn, RoutingEntry & routingEntry, bool inLeafNode, const TreeConfig & config);
+
+    ///Calculates distance of point (=ranges) from minimum bounding box
+    double calculateDistance(const std::vector<int> & ranges) const;
+
+    size_t calculateArea() const;
 };

@@ -23,7 +23,7 @@ void DataGenerator::generate() {
             }
             dataOutFile << random << " ";
         }
-        //TODO insert
+        tree.insert(ranges);
     }
 }
 

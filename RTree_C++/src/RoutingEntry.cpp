@@ -1,4 +1,4 @@
-#include <fstream>
+#include <cmath>
 #include "RoutingEntry.h"
 
 using namespace std;
@@ -25,5 +25,38 @@ void RoutingEntry::readEntry(ifstream &treeIn, RoutingEntry &routingEntry, bool 
             routingEntry.to.emplace_back(range);
         }
     }
+}
+
+double RoutingEntry::calculateDistance(const vector<int> & ranges) const{
+
+    vector<int> minDistance;
+    for (size_t i = 0; i < from.size(); ++i) {
+        int start = from[i];
+        int end = to[i];
+        if(start > end)
+            swap(start, end);
+
+        if(ranges[i] < start)
+            minDistance.emplace_back(start - ranges[i]);
+        else if(start <= ranges[i] && ranges[i] <= end)
+            continue;
+        else if(end < ranges[i])
+            minDistance.emplace_back(ranges[i] - end);
+    }
+    int result = 0;
+    for(auto & i : minDistance)
+        result += i * i;
+    return sqrt(result);
+}
+
+size_t RoutingEntry::calculateArea() const{
+
+    vector<size_t> sideLength;
+    size_t result = 1;
+    for (size_t i = 0; i < from.size(); ++i)
+        sideLength.emplace_back(abs(from[i] - to[i]));
+    for(auto & i : sideLength)
+        result *= i;
+    return result;
 }
 

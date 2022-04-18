@@ -28,6 +28,7 @@ void Application::dealWithInput() {
             dimension = stoi(argv[3]);
 
             auto tree = RTree(dimension);
+            tree.initStreams();
             tree.serializeInit();
 
             DataGenerator generator(dimension, dataFileName, tree);
