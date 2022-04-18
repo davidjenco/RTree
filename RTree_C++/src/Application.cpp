@@ -1,6 +1,7 @@
 #include <fstream>
 #include "Application.h"
 #include "DataGenerator.h"
+#include "RTree.h"
 
 using namespace std;
 
@@ -25,9 +26,13 @@ void Application::dealWithInput() {
                 throw invalid_argument("Invalid argument content or count");
 
             dimension = stoi(argv[3]);
+
+            auto tree = RTree(dimension); //TODO spíš s každým vygenerovaným novým datem udělat insert do stormu zrovna
+            tree.serializeInit();
+
             DataGenerator generator(dimension, dataFileName);
             generator.generate();
-            buildTree();
+
             break;
         }
         case SEARCH: {
@@ -74,8 +79,4 @@ void Application::sequenceSearch() {
     for (const auto & id : foundIds) {
         cout << "Found " << id << endl;
     }
-}
-
-void Application::buildTree() {
-
 }

@@ -12,6 +12,8 @@ int main(int argc, char * argv []) {
         CommandHandler::printHelpTable(argv[0]);
     } catch (out_of_range & outOfRangeOfCommands){ //thrown when input is not found in command map in CommandHandler
         CommandHandler::printHelpTable(argv[0]);
+    } catch (runtime_error & runtimeError){ //thrown when working with files goes wrong
+        cout << "Runtime error: " << runtimeError.what() << endl;
     }
 
     return 0;

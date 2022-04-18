@@ -23,8 +23,6 @@ public:
 
     ///Makes sequence range search in data file (for comparing to R-tree queries)
     void sequenceSearch();
-
-    void buildTree();
 };
 
 
