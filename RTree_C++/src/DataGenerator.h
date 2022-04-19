@@ -11,15 +11,14 @@ private:
     int max = 9999;
     int numberOfEntries = 100;
     std::string dataFileName;
-    RTree tree;
 
 public:
-    DataGenerator(int dimension, std::string dataFileName, const RTree &tree);
+    DataGenerator(int dimension, std::string dataFileName);
 
     ///Generates hardcoded number of data depending on demanded dimension in hardcoded min max range and stores
     ///it into data file (current format is text file) and also inserts all of these values into the tree
     ///passed in constructor
-    void generate();
+    void generate(RTree &tree);
 
     ///Generate random integer in specific range
     int getRandomInt();

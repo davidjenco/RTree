@@ -20,5 +20,10 @@ struct Node{
     void serializeNode(std::ofstream & treeOut, const TreeConfig & config);
 
     ///Reads one node from binary file
-    void readNode(std::ifstream & treeIn, Node & node, const TreeConfig & config);
+    static void readNode(std::ifstream & treeIn, Node & node, const TreeConfig & config);
+
+    ///Creates new RoutingEntry from node (so it means it always creates mbb, not point --> from and to is always set
+    ///but depending on node type (leaf or no leaf) it calculates min max on certain dimension from either only from
+    ///values (when leaf) or both from and to values (when no leaf))
+    void createEntry(RoutingEntry & routingEntry, const TreeConfig & config);
 };

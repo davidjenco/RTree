@@ -50,3 +50,21 @@ void Node::readNode(ifstream &treeIn, Node &node, const TreeConfig & config) {
     }
 }
 
+void Node::createEntry(RoutingEntry &routingEntry, const TreeConfig &config) {
+    for (int i = 0; i < config.dimension; ++i) {
+        vector<int32_t> tmp;
+        for (auto & entry : entries) {
+            tmp.emplace_back(entry.from[i]);
+            if (!isLeaf){
+                tmp.emplace_back(entry.to[i]);
+            }
+        }
+        size_t minIndex = min_element(tmp.begin(), tmp.end()) - tmp.begin();
+        size_t maxIndex = max_element(tmp.begin(), tmp.end()) - tmp.begin();
+
+        routingEntry.from.emplace_back(tmp[minIndex]);
+        routingEntry.to.emplace_back(tmp[maxIndex]);
+    }
+    routingEntry.childNodeId = id;
+}
+

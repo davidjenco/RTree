@@ -61,21 +61,3 @@ size_t RoutingEntry::calculateArea() const{
         result *= i;
     return result;
 }
-
-void RoutingEntry::createFromNode(const Node &node, const TreeConfig & config) {
-    for (int i = 0; i < config.dimension; ++i) {
-        vector<int32_t> tmp;
-        for (size_t j = 0; j < node.entries.size(); ++j) {
-            tmp.emplace_back(node.entries.from[i]);
-            if (!node.isLeaf){
-                tmp.emplace_back(node.entries.to[i]);
-            }
-        }
-        size_t minIndex = min_element(tmp.begin(), tmp.end()) - tmp.begin();
-        size_t maxIndex = max_element(tmp.begin(), tmp.end()) - tmp.begin();
-
-        from.emplace_back(tmp[minIndex]);
-        to.emplace_back(tmp[maxIndex]);
-    }
-    childNodeId = node.id;
-}

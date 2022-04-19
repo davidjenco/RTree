@@ -47,20 +47,26 @@ void testMBBfromNode(){
     RoutingEntry b;
     RoutingEntry c;
 
-    a.from = {1, 2, 3};
-    a.to = {2, 3, 4};
-    b.from = {1, 2, 3};
-    b.to = {2, 3, 4};
-    c.from = {1, 2, 3};
-    c.to = {2, 3, 4};
+    a.from = {-10, 2, 3};
+    b.from = {2, 3, 1};
+    c.from = {3, 9, 2};
+    a.to   = {2, 10, 4};
+    b.to   = {3, 4, 2};
+    c.to   = {4, 2, 30};
     vector<RoutingEntry> entries = {a, b, c};
-    Node n(1, false, entries);
 
+    Node n(1, true, entries);
     RoutingEntry parent;
-    parent.createFromNode(n, conf);
+
+    n.createEntry(parent, conf);
+    assert( parent.from.size() == conf.dimension );
+    for (size_t i = 0; i < parent.from.size(); ++i) {
+        cout << i << ": <" << parent.from[i] << "; " << parent.to[i] << ">" << endl;
+    }
+    assert(parent.childNodeId == n.id);
 }
 
 int main (){
     testCandidate();
-    testDistributeEntriesOnHalves();
+    testMBBfromNode();
 }

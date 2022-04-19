@@ -61,7 +61,7 @@ void RTree::insert(const DataRow & data) {
     treeIn.close();
 }
 
-void RTree::insertRec(const Node &node, const DataRow & data, RecurseInsertStruct & params) {
+void RTree::insertRec(Node &node, const DataRow & data, RecurseInsertStruct & params) {
     if (node.isLeaf){
         addIntoLeafNode(node, data, params);
         return;
@@ -105,6 +105,6 @@ void RTree::addIntoLeafNode(Node &leafNode, const DataRow & data, RecurseInsertS
         newNode.entries = half1;
         leafNode.entries = half2;
 
-        params.createdEntrySurroundingNewNodeIfSplit
+        //TODO
     }
 }

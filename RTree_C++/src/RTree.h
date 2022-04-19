@@ -34,7 +34,7 @@ public:
 
     void insert(const DataRow & data);
 
-    void insertRec(const Node & node, const DataRow & data, RecurseInsertStruct & params);
+    void insertRec(Node & node, const DataRow & data, RecurseInsertStruct & params);
 
     void addIntoLeafNode(Node & leafNode, const DataRow & data, RecurseInsertStruct & params);
 };

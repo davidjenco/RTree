@@ -6,11 +6,10 @@
 
 using namespace std;
 
-DataGenerator::DataGenerator(int dimension, string dataFileName, const RTree &tree) : dimension(dimension),
-                                                                                             dataFileName(std::move(dataFileName)),
-                                                                                             tree(tree) {}
+DataGenerator::DataGenerator(int dimension, string dataFileName) : dimension(dimension),
+                                                                                             dataFileName(std::move(dataFileName)) {}
 
-void DataGenerator::generate() {
+void DataGenerator::generate(RTree &tree) {
     auto dataOutFile = ofstream(dataFileName);
     for (int i = 0; i < numberOfEntries; ++i) {
         DataRow data (i);

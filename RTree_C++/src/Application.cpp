@@ -31,8 +31,8 @@ void Application::dealWithInput() {
             tree.initStreams();
             tree.serializeInit();
 
-            DataGenerator generator(dimension, dataFileName, tree);
-            generator.generate();
+            DataGenerator generator(dimension, dataFileName);
+            generator.generate(tree);
 
             break;
         }
