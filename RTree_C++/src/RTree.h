@@ -37,4 +37,6 @@ public:
     void insertRec(Node & node, const DataRow & data, RecurseInsertStruct & params);
 
     void addIntoLeafNode(Node & leafNode, const DataRow & data, RecurseInsertStruct & params);
+
+    void makeSplit(Node & fullNode, RoutingEntry & createdEntrySurroundingNewNode, const RoutingEntry & entryThatOverflowed);
 };

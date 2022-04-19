@@ -83,28 +83,61 @@ void RTree::insertRec(Node &node, const DataRow & data, RecurseInsertStruct & pa
     //TODO continue here
     //update BestEntry mmb
     //split add to BestEntry
+    if (params.split){
+        if(node.entries.size() == config.maxNodeEntries){
+            makeSplit(node, params.createdEntrySurroundingNewNodeIfSplit, params.createdEntrySurroundingNewNodeIfSplit);
+
+        }else{
+            params.split = false;
+            node.entries.emplace_back(params.createdEntrySurroundingNewNodeIfSplit);
+
+        }
+        //TODO: BestEntry = new entry that fits changes childNode
+    }
+    if (params.enlarged){
+        //TODO: Optimized update only for one entered entry
+        if (!(to narostlo))
+            enlarged = false;
+    }
+
 }
 
 void RTree::addIntoLeafNode(Node &leafNode, const DataRow & data, RecurseInsertStruct & params) {
     if (leafNode.entries.size() == config.maxLeafNodeEntries){
         params.split = true;
+        params.enlarged = true;
 
-        Node newNode;
-        newNode.id = config.numberOfNodes++;
-        newNode.isLeaf = true;
+        makeSplit(leafNode, params.createdEntrySurroundingNewNodeIfSplit, RoutingEntry(data));
+    }
+    else{
+        params.split = false;
+        params.enlarged = true;
 
         leafNode.entries.emplace_back(RoutingEntry(data));
-        random_device rd;
-        mt19937 rng(rd());
-        shuffle(leafNode.entries.begin(), leafNode.entries.end(), rng);
-
-        size_t const half_size = leafNode.entries.size() / 2;
-        vector<RoutingEntry> half1(leafNode.entries.begin(), leafNode.entries.begin() + half_size);
-        vector<RoutingEntry> half2(leafNode.entries.begin() + half_size, leafNode.entries.end());
-
-        newNode.entries = half1;
-        leafNode.entries = half2;
-
-        //TODO
     }
+}
+
+void RTree::makeSplit(Node &fullNode, RoutingEntry &createdEntrySurroundingNewNode, const RoutingEntry &entryThatOverflowed) {
+    //Create newNode and distribute entries between full and new node
+    Node newNode;
+    newNode.id = config.numberOfNodes++;
+    newNode.isLeaf = fullNode.isLeaf;
+
+    fullNode.entries.emplace_back(entryThatOverflowed);
+    random_device rd;
+    mt19937 rng(rd());
+    shuffle(fullNode.entries.begin(), fullNode.entries.end(), rng);
+
+    size_t const half_size = fullNode.entries.size() / 2;
+    vector<RoutingEntry> half1(fullNode.entries.begin(), fullNode.entries.begin() + half_size);
+    vector<RoutingEntry> half2(fullNode.entries.begin() + half_size, fullNode.entries.end());
+
+    newNode.entries = half1;
+    fullNode.entries = half2;
+
+    //Serialize newNode
+    newNode.serializeNode(treeOut, config);
+
+    //With this code createdEntrySurroundingNewNodeIfSplit variable is changed
+    newNode.createEntry(createdEntrySurroundingNewNode, config);
 }
