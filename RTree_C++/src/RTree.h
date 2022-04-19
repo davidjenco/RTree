@@ -5,6 +5,7 @@
 #include "Node.h"
 #include "TreeConfig.h"
 #include "RecurseInsertStruct.h"
+#include "DataRow.h"
 
 ///RTree representation
 class RTree {
@@ -31,9 +32,9 @@ public:
     ///leaf node entries need less memory/information (depending on size of one node and dimension)
     uint32_t calculateMaxLeafNodeEntries() const;
 
-    void insert(const std::vector<int> & ranges);
+    void insert(const DataRow & data);
 
-    void insertRec(std::ifstream & treeIn, const Node & node, const std::vector<int> & ranges, RecurseInsertStruct & params);
+    void insertRec(const Node & node, const DataRow & data, RecurseInsertStruct & params);
 
-    void addIntoLeafNode(const Node & leafNode, const std::vector<int> & ranges, RecurseInsertStruct & params);
+    void addIntoLeafNode(Node & leafNode, const DataRow & data, RecurseInsertStruct & params);
 };

@@ -1,6 +1,7 @@
 #include <vector>
 #include <iostream>
 #include <map>
+#include <random>
 #include "RTree.h"
 #include "InsertCandidate.h"
 
@@ -45,8 +46,8 @@ uint32_t RTree::calculateMaxLeafNodeEntries() const{
     return result / dummyEntrySize;
 }
 
-void RTree::insert(const vector<int> & ranges) {
-    if (ranges.size() != config.dimension)
+void RTree::insert(const DataRow & data) {
+    if (data.ranges.size() != config.dimension)
         throw invalid_argument("Too few arguments for insert");
 
     treeIn.seekg(config.metadataOffset + config.rootId * config.nodeSizeInBytes);
@@ -54,20 +55,21 @@ void RTree::insert(const vector<int> & ranges) {
     Node::readNode(treeIn, rootNode, config);
 
     RecurseInsertStruct initParams;
-    insertRec(treeIn, rootNode, ranges, initParams);
+    insertRec(rootNode, data, initParams);
 
+    ///update split root?
     treeIn.close();
 }
 
-void RTree::insertRec(std::ifstream & treeIn, const Node &node, const vector<int> &ranges, RecurseInsertStruct & params) {
+void RTree::insertRec(const Node &node, const DataRow & data, RecurseInsertStruct & params) {
     if (node.isLeaf){
-        addIntoLeafNode(node, ranges, params);
+        addIntoLeafNode(node, data, params);
         return;
     }
 
     vector<InsertCandidate> distances;
     for (const auto & entry : node.entries) {
-        distances.emplace_back(entry.calculateDistance(ranges), entry.calculateArea());
+        distances.emplace_back(entry.calculateDistance(data.ranges), entry.calculateArea());
     }
     auto min = min_element(distances.begin(), distances.end());
     RoutingEntry bestEntry = node.entries[min - distances.begin()];
@@ -76,16 +78,33 @@ void RTree::insertRec(std::ifstream & treeIn, const Node &node, const vector<int
     Node childNode;
     Node::readNode(treeIn, childNode, config);
 
-    insertRec(treeIn, childNode, ranges, params);
+    insertRec(childNode, data, params);
 
     //TODO continue here
     //update BestEntry mmb
     //split add to BestEntry
 }
 
-void RTree::addIntoLeafNode(const Node &leafNode, const vector<int> &ranges, RecurseInsertStruct & params) {
+void RTree::addIntoLeafNode(Node &leafNode, const DataRow & data, RecurseInsertStruct & params) {
     if (leafNode.entries.size() == config.maxLeafNodeEntries){
         params.split = true;
-        //TODO continue here
+
+        Node newNode;
+        newNode.id = config.numberOfNodes++;
+        newNode.isLeaf = true;
+
+        leafNode.entries.emplace_back(RoutingEntry(data));
+        random_device rd;
+        mt19937 rng(rd());
+        shuffle(leafNode.entries.begin(), leafNode.entries.end(), rng);
+
+        size_t const half_size = leafNode.entries.size() / 2;
+        vector<RoutingEntry> half1(leafNode.entries.begin(), leafNode.entries.begin() + half_size);
+        vector<RoutingEntry> half2(leafNode.entries.begin() + half_size, leafNode.entries.end());
+
+        newNode.entries = half1;
+        leafNode.entries = half2;
+
+        params.createdEntrySurroundingNewNodeIfSplit
     }
 }
