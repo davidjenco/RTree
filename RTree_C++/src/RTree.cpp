@@ -19,13 +19,14 @@ RTree::RTree(int dimension) {
 void RTree::serializeInit() {
     config.serialize(treeOut);
     root.serializeNode(treeOut, config);
-
-    treeOut.close();
 }
 
 void RTree::initStreams() {
     treeIn = ifstream(config.treeFileName, ios_base::binary);
     treeOut = ofstream(config.treeFileName, ios_base::binary);
+
+    treeIn.exceptions(ios::badbit);
+    treeOut.exceptions(ios::badbit | ios::failbit);
 }
 
 uint32_t RTree::calculateMaxNodeEntries() const{
@@ -49,8 +50,9 @@ void RTree::insert(const DataRow & data) {
 
     treeIn.seekg(config.metadataOffset + config.rootId * config.nodeSizeInBytes);
     Node rootNode;
-    Node::readNode(treeIn, rootNode, config);
 
+    Node::readNode(treeIn, rootNode, config);
+    cout << "RootNode read. rootID: " << rootNode.id << " isLeaf? --> " << boolalpha << rootNode.isLeaf << endl;
     RecurseInsertStruct initParams;
     insertRec(rootNode, data, initParams);
 
@@ -67,15 +69,15 @@ void RTree::insert(const DataRow & data) {
         config.rootId = newRoot.id;
     }
 
-    treeIn.close();
 }
 
 void RTree::insertRec(Node &node, const DataRow & data, RecurseInsertStruct & params) {
     if (node.isLeaf){
+        cout << "Adding to leaf node. nodeID: " << node.id << endl;
         addIntoLeafNode(node, data, params);
         return;
     }
-
+    cout << "Choosing best entry in nodeID: " << node.id << endl;
     vector<InsertCandidate> distances;
     for (const auto & entry : node.entries) {
         distances.emplace_back(entry.calculateDistance(data.ranges), entry.calculateArea());
@@ -85,8 +87,9 @@ void RTree::insertRec(Node &node, const DataRow & data, RecurseInsertStruct & pa
 
     treeIn.seekg(config.metadataOffset + bestEntry.childNodeId * config.nodeSizeInBytes);
     Node childNode;
+    cout << "Best entry found. Reading his child." << endl;
     Node::readNode(treeIn, childNode, config);
-
+    cout << "Child read. childNodeID: " << childNode.id << " isLeaf? --> " << boolalpha << childNode.isLeaf << endl;
     insertRec(childNode, data, params);
 
     if (params.split){
@@ -112,15 +115,16 @@ void RTree::addIntoLeafNode(Node &leafNode, const DataRow & data, RecurseInsertS
     if (leafNode.entries.size() == config.maxLeafNodeEntries){
         params.split = true;
         params.enlarged = true;
-
+        cout << "Split in adding to leaf." << endl;
         makeSplit(leafNode, params.createdEntrySurroundingNewNodeIfSplit, RoutingEntry(data));
     }
     else{
         params.split = false;
         params.enlarged = true;
-
+        cout << "No split in adding to leaf." << endl;
         leafNode.entries.emplace_back(RoutingEntry(data));
     }
+    cout << "Writing leaf node. nodeID: " << leafNode.id << endl;
     leafNode.rewriteNode(treeOut, config);
 }
 
@@ -147,4 +151,9 @@ void RTree::makeSplit(Node &fullNode, RoutingEntry &createdEntrySurroundingNewNo
 
     //With this code createdEntrySurroundingNewNodeIfSplit variable is changed
     newNode.createEntry(createdEntrySurroundingNewNode, config);
+}
+
+void RTree::closeStreams() {
+    treeOut.close();
+    treeIn.close();
 }

@@ -1,4 +1,5 @@
 #include <cmath>
+#include <iostream>
 #include "RoutingEntry.h"
 
 using namespace std;
@@ -18,7 +19,8 @@ void RoutingEntry::serializeEntry(ofstream &treeOut, bool inLeafNode) {
 void RoutingEntry::readEntry(ifstream &treeIn, RoutingEntry &routingEntry, bool inLeafNode, const TreeConfig & config) {
     treeIn.read((char *) & routingEntry.childNodeId, sizeof(routingEntry.childNodeId));
 
-    int range;
+
+    int32_t range;
     for (size_t i = 0; i < config.dimension; ++i) {
         treeIn.read((char *) & range, sizeof(range));
         routingEntry.from.emplace_back(range);
@@ -26,6 +28,11 @@ void RoutingEntry::readEntry(ifstream &treeIn, RoutingEntry &routingEntry, bool 
             treeIn.read((char *) & range, sizeof(range));
             routingEntry.to.emplace_back(range);
         }
+    }
+
+    if (treeIn.fail()){
+        treeIn.close();
+        throw runtime_error("Error while reading from file (entry)");
     }
 }
 

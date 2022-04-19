@@ -30,10 +30,11 @@ void Application::dealWithInput() {
             auto tree = RTree(dimension);
             tree.initStreams();
             tree.serializeInit();
-
+            cout << "RTree first node build and serialized." << endl;
             DataGenerator generator(dimension, dataFileName);
             generator.generate(tree);
 
+            tree.closeStreams();
             break;
         }
         case SEARCH: {

@@ -88,6 +88,10 @@ void rewriteInFile(){
     ofs.write((char *) & justTestInt, sizeof(justTestInt));
     ofs.seekp(0);
     ofs.write((char *) & anotherTestInt, sizeof(anotherTestInt));
+    ofs.seekp(ofs.tellp());
+//    ofs.seekp(4);
+//    ofs.seekp(ofstream::end);
+    ofs.write((char *) & justTestInt, sizeof(justTestInt));
 
     ofs.close();
 }
@@ -95,6 +99,8 @@ void rewriteInFile(){
 int main (){
     testCandidate();
     testMBBfromNode();
+
+    rewriteInFile();
 
 
 }

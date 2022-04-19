@@ -9,6 +9,6 @@ void TreeConfig::serialize(ofstream &treeOut) {
     treeOut.write((char *) & rootId, sizeof(rootId));
 
     if (treeOut.fail())
-        throw runtime_error("Error while reading from file");
+        throw runtime_error("Error while writing to file (metadata)");
 }
 

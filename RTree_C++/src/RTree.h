@@ -47,4 +47,6 @@ public:
     ///Creates new node, splits entries between fulfilled node and this new node, serializes new node and also assign
     ///entry surrounding this new node (this entry is then inserted to the parent node entries)
     void makeSplit(Node & fullNode, RoutingEntry & createdEntrySurroundingNewNode, const RoutingEntry & entryThatOverflowed);
+
+    void closeStreams();
 };
