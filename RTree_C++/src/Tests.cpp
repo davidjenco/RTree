@@ -66,7 +66,35 @@ void testMBBfromNode(){
     assert(parent.childNodeId == n.id);
 }
 
+void swapInVec(){
+    vector<int> vec = {1, 2, 3};
+    vector<int> vec2 = {3, 4, 5};
+
+    swap(vec[1], vec2[1]);
+    for(auto & i : vec)
+        cout << i << " ";
+    cout << endl;
+    for( auto & i : vec2 )
+        cout << i << " ";
+    cout << endl;
+}
+
+void rewriteInFile(){
+    ofstream ofs ("../testtt");
+    int justTestInt = 2048;
+    int anotherTestInt = 1;
+
+    ofs.seekp(0);
+    ofs.write((char *) & justTestInt, sizeof(justTestInt));
+    ofs.seekp(0);
+    ofs.write((char *) & anotherTestInt, sizeof(anotherTestInt));
+
+    ofs.close();
+}
+
 int main (){
     testCandidate();
     testMBBfromNode();
+
+
 }

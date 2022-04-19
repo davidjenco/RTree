@@ -61,3 +61,22 @@ size_t RoutingEntry::calculateArea() const{
         result *= i;
     return result;
 }
+
+bool RoutingEntry::enlargeEntry(const DataRow &point) {
+
+    bool enlarged = false;
+    for (size_t i = 0; i < from.size(); ++i) {
+        if(from[i] > to[i])
+            swap(from[i], to[i]);
+
+        if (point.ranges[i] < from[i]){
+            enlarged = true;
+            from[i] = point.ranges[i];
+        }else if (point.ranges[i] > to[i]){
+            enlarged = true;
+            to[i] = point.ranges[i];
+        }
+    }
+
+    return enlarged;
+}

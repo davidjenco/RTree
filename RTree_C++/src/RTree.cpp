@@ -20,9 +20,6 @@ void RTree::serializeInit() {
     config.serialize(treeOut);
     root.serializeNode(treeOut, config);
 
-    if (treeOut.fail())
-        throw runtime_error("Error while reading from file");
-
     treeOut.close();
 }
 
@@ -57,7 +54,19 @@ void RTree::insert(const DataRow & data) {
     RecurseInsertStruct initParams;
     insertRec(rootNode, data, initParams);
 
-    ///update split root?
+    if (initParams.split){
+        Node newRoot;
+        newRoot.isLeaf = false;
+        newRoot.id = config.numberOfNodes++;
+        newRoot.entries.emplace_back(initParams.createdEntrySurroundingNewNodeIfSplit);
+        RoutingEntry newEntrySurroundingOldRoot; //toCoNamZbyloZOldRootPoTomCoJsmeJejRozstipli
+        rootNode.createEntry(newEntrySurroundingOldRoot, config);
+        newRoot.entries.emplace_back(newEntrySurroundingOldRoot);
+
+        newRoot.serializeNode(treeOut, config);
+        config.rootId = newRoot.id;
+    }
+
     treeIn.close();
 }
 
@@ -80,26 +89,23 @@ void RTree::insertRec(Node &node, const DataRow & data, RecurseInsertStruct & pa
 
     insertRec(childNode, data, params);
 
-    //TODO continue here
-    //update BestEntry mmb
-    //split add to BestEntry
     if (params.split){
         if(node.entries.size() == config.maxNodeEntries){
             makeSplit(node, params.createdEntrySurroundingNewNodeIfSplit, params.createdEntrySurroundingNewNodeIfSplit);
-
         }else{
             params.split = false;
             node.entries.emplace_back(params.createdEntrySurroundingNewNodeIfSplit);
-
         }
-        //TODO: BestEntry = new entry that fits changes childNode
+        childNode.createEntry(bestEntry, config); //enlarge bestEntry, params.enlarge stays true
+        node.rewriteNode(treeOut, config); //child note is rewritten surely - whether leaf or used to be parent
     }
-    if (params.enlarged){
-        //TODO: Optimized update only for one entered entry
-        if (!(to narostlo))
-            enlarged = false;
+    else if (params.enlarged){ //means I have to check my mbb
+        //determine if best entry needs to be enlarged and enlarge it if needed
+        params.enlarged = bestEntry.enlargeEntry(data);
+        if (params.enlarged){
+            node.rewriteNode(treeOut, config); //could be optimized here maybe, just one entry changed
+        }
     }
-
 }
 
 void RTree::addIntoLeafNode(Node &leafNode, const DataRow & data, RecurseInsertStruct & params) {
@@ -115,6 +121,7 @@ void RTree::addIntoLeafNode(Node &leafNode, const DataRow & data, RecurseInsertS
 
         leafNode.entries.emplace_back(RoutingEntry(data));
     }
+    leafNode.rewriteNode(treeOut, config);
 }
 
 void RTree::makeSplit(Node &fullNode, RoutingEntry &createdEntrySurroundingNewNode, const RoutingEntry &entryThatOverflowed) {

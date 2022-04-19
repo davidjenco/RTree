@@ -27,6 +27,9 @@ void Node::serializeNode(ofstream &treeOut, const TreeConfig & config) {
             padding.serializeEntry(treeOut, isLeaf);
         }
     }
+
+    if (treeOut.fail())
+        throw runtime_error("Error while reading from file");
 }
 
 void Node::readNode(ifstream &treeIn, Node &node, const TreeConfig & config) {
@@ -50,7 +53,7 @@ void Node::readNode(ifstream &treeIn, Node &node, const TreeConfig & config) {
     }
 }
 
-void Node::createEntry(RoutingEntry &routingEntry, const TreeConfig &config) {
+Node & Node::createEntry(RoutingEntry &routingEntry, const TreeConfig &config) {
     for (int i = 0; i < config.dimension; ++i) {
         vector<int32_t> tmp;
         for (auto & entry : entries) {
@@ -66,5 +69,12 @@ void Node::createEntry(RoutingEntry &routingEntry, const TreeConfig &config) {
         routingEntry.to.emplace_back(tmp[maxIndex]);
     }
     routingEntry.childNodeId = id;
+    return *this;
+}
+
+void Node::rewriteNode(std::ofstream & treeOut, const TreeConfig &config) {
+    treeOut.seekp(config.metadataOffset + (id * config.nodeSizeInBytes));
+    this->serializeNode(treeOut, config);
+    treeOut.seekp(std::ofstream::end);
 }
 

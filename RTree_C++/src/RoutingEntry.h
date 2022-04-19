@@ -26,4 +26,6 @@ struct RoutingEntry{
 
     ///Calculates area of mbb
     size_t calculateArea() const;
+
+    bool enlargeEntry(const DataRow & point);
 };
