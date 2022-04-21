@@ -97,6 +97,7 @@ void rewriteInFile(){
 
     ofs.close();
 }
+
 size_t getFileSize(TreeConfig & config){
     ifstream treeFile(config.treeFileName, ios::binary);
     treeFile.seekg(ios::end);
@@ -104,9 +105,11 @@ size_t getFileSize(TreeConfig & config){
     treeFile.seekg(ios::beg);
     return fileSize;
 }
+
 void readWriteNodes(){
 
-    auto tree = RTree(2);
+    auto tree = RTree();
+    tree.configInit(2);
     tree.initStreamsRecreateFile();
     tree.serializeInit();
 
@@ -129,9 +132,23 @@ void readWriteNodes(){
     tree.closeStreams();
 }
 
+void testCalculations(){
+    RTree tree;
+    tree.configInit(4);
+
+    cout << tree.getConfig().maxNodeEntries << " in node and " << tree.getConfig().maxLeafNodeEntries << " in leaf" << endl;
+
+    assert((tree.getConfig().nodeSizeInBytes - sizeof(tree.getRoot().id) - sizeof(tree.getRoot().isLeaf)) % tree.getConfig().maxNodeEntries == 0);
+    assert((tree.getConfig().nodeSizeInBytes - sizeof(tree.getRoot().id) - sizeof(tree.getRoot().isLeaf)) % tree.getConfig().maxLeafNodeEntries == 0);
+
+    cout << tree.getConfig().minPossibleNodeSize << endl;
+}
+
 int main (){
 //    testCandidate();
 //    testMBBfromNode();
 //    rewriteInFile();
-    readWriteNodes();
+//    readWriteNodes();
+
+    testCalculations();
 }

@@ -7,18 +7,40 @@
 
 using namespace std;
 
-RTree::RTree(int dimension) {
+RTree::RTree() {
     root = Node(0, true, vector<RoutingEntry>());
+}
+
+void RTree::configInit(int dimension) {
     config.dimension = dimension;
     config.numberOfNodes++;
     config.rootId = 0;
-    config.maxNodeEntries = calculateMaxNodeEntries();
-    config.maxLeafNodeEntries = calculateMaxLeafNodeEntries();
+
+//    for (; config.maxNodeEntries < 50 ; config.minPossibleNodeSize += 400) {
+        config.nodeSizeInBytes = calculateNodeSize();
+        config.maxNodeEntries = calculateMaxNodeEntries();
+        config.maxLeafNodeEntries = calculateMaxLeafNodeEntries();
+//    }
+//    config.minPossibleNodeSize -= 400;
 }
 
 void RTree::serializeInit() {
     config.serialize(treeFileStream);
     root.serializeNode(treeFileStream, config);
+}
+
+uint32_t RTree::calculateNodeSize() const{
+    Node dummyNode;
+
+    uint32_t leafRoutingEntrySizeInSetDimension, noLeafRoutingEntrySizeInSetDimension;
+    leafRoutingEntrySizeInSetDimension =  (config.dimension * sizeof(int32_t)) + sizeof(uint32_t);
+    noLeafRoutingEntrySizeInSetDimension = 2 * (config.dimension * sizeof(int32_t)) + sizeof(uint32_t);
+
+    double l = lcm(leafRoutingEntrySizeInSetDimension, noLeafRoutingEntrySizeInSetDimension);
+    uint32_t minSizeForEntriesInNode = config.minPossibleNodeSize - (uint32_t)sizeof(dummyNode.id) - (uint32_t)sizeof(dummyNode.isLeaf);
+    uint32_t k = ceil(minSizeForEntriesInNode / l);
+
+    return k * (uint32_t) l + (uint32_t)sizeof(dummyNode.id) + (uint32_t)sizeof(dummyNode.isLeaf); //TODO proměnné
 }
 
 uint32_t RTree::calculateMaxNodeEntries() const{
@@ -32,7 +54,7 @@ uint32_t RTree::calculateMaxNodeEntries() const{
 uint32_t RTree::calculateMaxLeafNodeEntries() const{
     Node dummyNode;
     uint32_t result = config.nodeSizeInBytes - sizeof(dummyNode.id) - sizeof(dummyNode.isLeaf);
-    uint32_t dummyEntrySize = config.dimension * sizeof(int32_t) + sizeof(uint32_t);
+    uint32_t dummyEntrySize = (config.dimension * sizeof(int32_t)) + sizeof(uint32_t);
     return result / dummyEntrySize;
 }
 
@@ -58,7 +80,6 @@ void RTree::insert(const DataRow & data) {
         rootNode.createEntry(newEntrySurroundingOldRoot, config);
         newRoot.entries.emplace_back(newEntrySurroundingOldRoot);
 
-        //TODO add move?
         newRoot.serializeNode(treeFileStream, config);
         config.rootId = newRoot.id;
     }

@@ -81,7 +81,7 @@ Node & Node::createEntry(RoutingEntry &routingEntry, const TreeConfig &config) {
 }
 
 void Node::rewriteNode(std::fstream & treeFileStream, const TreeConfig &config) {
-    treeFileStream.seekp(config.metadataOffset + (id * config.nodeSizeInBytes), ios_base::beg);
+    treeFileStream.seekp(config.metadataOffset + (id * config.nodeSizeInBytes), ios::beg);
     serializeNode(treeFileStream, config);
     treeFileStream.seekp(0, ios::end);
 }

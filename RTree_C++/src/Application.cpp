@@ -27,7 +27,8 @@ void Application::dealWithInput() {
 
             dimension = stoi(argv[3]);
 
-            auto tree = RTree(dimension);
+            auto tree = RTree();
+            tree.configInit(dimension);
             tree.initStreamsRecreateFile();
             tree.serializeInit();
 

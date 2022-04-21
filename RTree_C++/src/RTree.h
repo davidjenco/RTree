@@ -16,10 +16,14 @@ private:
 
 public:
     ///Explicit means that this constructor will be used only if it's explicitly typed
-    explicit RTree(int dimension);
+    RTree();
+
+    void configInit(int dimension);
 
     ///Serializes metadata of the tree and also initialized root node (maybe will be modified in future)
     void serializeInit();
+
+    uint32_t calculateNodeSize() const;
 
     ///Calculates number of entries that can fit inside one node (method depends on size of one node and dimension)
     uint32_t calculateMaxNodeEntries() const;
