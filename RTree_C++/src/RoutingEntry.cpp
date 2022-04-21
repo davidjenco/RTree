@@ -8,7 +8,6 @@ RoutingEntry::RoutingEntry(const DataRow &dataRow) : childNodeId(dataRow.rowId),
 
 void RoutingEntry::serializeEntry(fstream &treeFileStream, bool inLeafNode) {
     treeFileStream.write((char *) & childNodeId, sizeof(childNodeId));
-    cout << "Serializing entry with id " << childNodeId << endl;
     for (size_t j = 0; j < from.size(); ++j) {
         treeFileStream.write((char *) & from[j], sizeof(from[j]));
         if (!inLeafNode){
