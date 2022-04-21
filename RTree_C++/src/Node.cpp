@@ -44,8 +44,8 @@ void Node::readNode(fstream &treeFileStream, Node &node, const TreeConfig & conf
         maxEntries = config.maxLeafNodeEntries;
     }
 
-    RoutingEntry routingEntry;
     for (int i = 0; i < maxEntries; ++i) {
+        RoutingEntry routingEntry;
         RoutingEntry::readEntry(treeFileStream, routingEntry, node.isLeaf, config);
         if (routingEntry.childNodeId == UINT32_MAX){
             break;
@@ -81,7 +81,7 @@ Node & Node::createEntry(RoutingEntry &routingEntry, const TreeConfig &config) {
 }
 
 void Node::rewriteNode(std::fstream & treeFileStream, const TreeConfig &config) {
-    treeFileStream.seekp(config.metadataOffset + (id * config.nodeSizeInBytes));
-    this->serializeNode(treeFileStream, config);
-    treeFileStream.seekp(ios::end);
+    treeFileStream.seekp(config.metadataOffset + (id * config.nodeSizeInBytes), ios_base::beg);
+    serializeNode(treeFileStream, config);
+    treeFileStream.seekp(0, ios::end);
 }

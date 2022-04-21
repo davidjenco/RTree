@@ -17,7 +17,6 @@ RTree::RTree(int dimension) {
 }
 
 void RTree::serializeInit() {
-    treeFileStream.seekp(ios::beg); //for sure --> should be done by trunc
     config.serialize(treeFileStream);
     root.serializeNode(treeFileStream, config);
 }
@@ -41,7 +40,7 @@ void RTree::insert(const DataRow & data) {
     if (data.ranges.size() != config.dimension)
         throw invalid_argument("Too few arguments for insert");
 
-    treeFileStream.seekg(config.metadataOffset + config.rootId * config.nodeSizeInBytes);
+    treeFileStream.seekg(config.metadataOffset + config.rootId * config.nodeSizeInBytes, ios::beg);
     Node rootNode;
 
     Node::readNode(treeFileStream, rootNode, config);
@@ -59,6 +58,7 @@ void RTree::insert(const DataRow & data) {
         rootNode.createEntry(newEntrySurroundingOldRoot, config);
         newRoot.entries.emplace_back(newEntrySurroundingOldRoot);
 
+        //TODO add move?
         newRoot.serializeNode(treeFileStream, config);
         config.rootId = newRoot.id;
     }
@@ -78,7 +78,7 @@ void RTree::insertRec(Node &node, const DataRow & data, RecurseInsertStruct & pa
     auto min = min_element(distances.begin(), distances.end());
     RoutingEntry bestEntry = node.entries[min - distances.begin()];
 
-    treeFileStream.seekg(config.metadataOffset + bestEntry.childNodeId * config.nodeSizeInBytes);
+    treeFileStream.seekg(config.metadataOffset + bestEntry.childNodeId * config.nodeSizeInBytes, ios::beg);
 //    cout << "Best entry found. Reading his child." << endl;
     Node childNode;
     Node::readNode(treeFileStream, childNode, config);
@@ -135,8 +135,8 @@ void RTree::makeSplit(Node &fullNode, RoutingEntry &createdEntrySurroundingNewNo
     shuffle(fullNode.entries.begin(), fullNode.entries.end(), rng);
 
     size_t const half_size = fullNode.entries.size() / 2;
-    vector<RoutingEntry> half1(fullNode.entries.begin(), fullNode.entries.begin() + half_size);
-    vector<RoutingEntry> half2(fullNode.entries.begin() + half_size, fullNode.entries.end());
+    vector<RoutingEntry> half1 (fullNode.entries.begin(), fullNode.entries.begin() + half_size);
+    vector<RoutingEntry> half2 (fullNode.entries.begin() + half_size, fullNode.entries.end());
 
     newNode.entries = half1;
     fullNode.entries = half2;
@@ -153,7 +153,8 @@ void RTree::initStreamsRecreateFile() {
 }
 
 void RTree::initStreamsExistingFile() {
-    treeFileStream.open(config.treeFileName, ios::in | ios::out | ios::binary | ios::app);
+//    treeFileStream.open(config.treeFileName, ios::in | ios::out | ios::binary | ios::app);
+    treeFileStream.open(config.treeFileName, ios::in | ios::out | ios::binary | ios::ate);
 }
 
 void RTree::closeStreams() {
