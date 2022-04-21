@@ -19,5 +19,5 @@ struct TreeConfig {
     TreeConfig() = default;
 
     ///Serializes metadata of the tree
-    void serialize(std::ofstream & treeOut);
+    void serialize(std::fstream & treeFileStream);
 };

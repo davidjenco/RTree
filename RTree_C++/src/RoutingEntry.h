@@ -16,10 +16,10 @@ struct RoutingEntry{
     explicit RoutingEntry(const DataRow & dataRow);
 
     ///Serializes one entry of the node into binary file
-    void serializeEntry(std::ofstream & treeOut, bool inLeafNode);
+    void serializeEntry(std::fstream & treeFileStream, bool inLeafNode);
 
     ///Reads one entry from binary file
-    static void readEntry(std::ifstream & treeIn, RoutingEntry & routingEntry, bool inLeafNode, const TreeConfig & config);
+    static void readEntry(std::fstream & treeFileStream, RoutingEntry & routingEntry, bool inLeafNode, const TreeConfig & config);
 
     ///Calculates distance of point (=ranges) from minimum bounding box
     double calculateDistance(const std::vector<int> & ranges) const;

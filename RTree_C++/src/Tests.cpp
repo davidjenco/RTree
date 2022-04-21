@@ -99,8 +99,6 @@ void rewriteInFile(){
 int main (){
     testCandidate();
     testMBBfromNode();
-
     rewriteInFile();
-
 
 }

@@ -8,24 +8,21 @@
 using namespace std;
 
 DataGenerator::DataGenerator(int dimension, string dataFileName) : dimension(dimension),
-                                                                                             dataFileName(std::move(dataFileName)) {}
+                                                                   dataFileName(std::move(dataFileName)) {}
 
 void DataGenerator::generate(RTree &tree) {
     auto dataOutFile = ofstream(dataFileName);
     for (int i = 0; i < numberOfEntries; ++i) {
         DataRow data (i);
         dataOutFile << i << " ";
-        cout << "Inserting data: " << i << " ";
         for (int j = 0; j < dimension; ++j) { //value for each dimension
             int random = this->getRandomInt();
             data.ranges.emplace_back(random);
             if (j == dimension - 1) {
                 dataOutFile << random << endl;
-                cout << random << endl;
                 break;
             }
             dataOutFile << random << " ";
-            cout << random << " ";
         }
         tree.insert(data);
     }

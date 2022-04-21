@@ -12,8 +12,7 @@ class RTree {
 private:
     Node root;
     TreeConfig config;
-    std::ifstream treeIn;
-    std::ofstream treeOut;
+    std::fstream treeFileStream;
 
 public:
     ///Explicit means that this constructor will be used only if it's explicitly typed
@@ -21,9 +20,6 @@ public:
 
     ///Serializes metadata of the tree and also initialized root node (maybe will be modified in future)
     void serializeInit();
-
-    ///Opens and assigns streams so reopening is not happening
-    void initStreams();
 
     ///Calculates number of entries that can fit inside one node (method depends on size of one node and dimension)
     uint32_t calculateMaxNodeEntries() const;
@@ -47,6 +43,12 @@ public:
     ///Creates new node, splits entries between fulfilled node and this new node, serializes new node and also assign
     ///entry surrounding this new node (this entry is then inserted to the parent node entries)
     void makeSplit(Node & fullNode, RoutingEntry & createdEntrySurroundingNewNode, const RoutingEntry & entryThatOverflowed);
+
+    ///Creates new file (or overwrites origin one)
+    void initStreamsRecreateFile();
+
+    ///Opens stream to existing file and sets cursor to end position
+    void initStreamsExistingFile();
 
     void closeStreams();
 };

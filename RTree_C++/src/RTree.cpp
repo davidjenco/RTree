@@ -17,16 +17,9 @@ RTree::RTree(int dimension) {
 }
 
 void RTree::serializeInit() {
-    config.serialize(treeOut);
-    root.serializeNode(treeOut, config);
-}
-
-void RTree::initStreams() {
-    treeIn = ifstream(config.treeFileName, ios_base::binary);
-    treeOut = ofstream(config.treeFileName, ios_base::binary);
-
-    treeIn.exceptions(ios::badbit);
-    treeOut.exceptions(ios::badbit | ios::failbit);
+    treeFileStream.seekp(ios::beg); //for sure --> should be done by trunc
+    config.serialize(treeFileStream);
+    root.serializeNode(treeFileStream, config);
 }
 
 uint32_t RTree::calculateMaxNodeEntries() const{
@@ -48,11 +41,12 @@ void RTree::insert(const DataRow & data) {
     if (data.ranges.size() != config.dimension)
         throw invalid_argument("Too few arguments for insert");
 
-    treeIn.seekg(config.metadataOffset + config.rootId * config.nodeSizeInBytes);
+    treeFileStream.seekg(config.metadataOffset + config.rootId * config.nodeSizeInBytes);
     Node rootNode;
 
-    Node::readNode(treeIn, rootNode, config);
-    cout << "RootNode read. rootID: " << rootNode.id << " isLeaf? --> " << boolalpha << rootNode.isLeaf << endl;
+    Node::readNode(treeFileStream, rootNode, config);
+
+    cout << endl << "RootNode read. rootID: " << rootNode.id << " isLeaf? --> " << boolalpha << rootNode.isLeaf << endl;
     RecurseInsertStruct initParams;
     insertRec(rootNode, data, initParams);
 
@@ -65,10 +59,9 @@ void RTree::insert(const DataRow & data) {
         rootNode.createEntry(newEntrySurroundingOldRoot, config);
         newRoot.entries.emplace_back(newEntrySurroundingOldRoot);
 
-        newRoot.serializeNode(treeOut, config);
+        newRoot.serializeNode(treeFileStream, config);
         config.rootId = newRoot.id;
     }
-
 }
 
 void RTree::insertRec(Node &node, const DataRow & data, RecurseInsertStruct & params) {
@@ -77,7 +70,7 @@ void RTree::insertRec(Node &node, const DataRow & data, RecurseInsertStruct & pa
         addIntoLeafNode(node, data, params);
         return;
     }
-    cout << "Choosing best entry in nodeID: " << node.id << endl;
+//    cout << "Choosing best entry in nodeID: " << node.id << endl;
     vector<InsertCandidate> distances;
     for (const auto & entry : node.entries) {
         distances.emplace_back(entry.calculateDistance(data.ranges), entry.calculateArea());
@@ -85,11 +78,11 @@ void RTree::insertRec(Node &node, const DataRow & data, RecurseInsertStruct & pa
     auto min = min_element(distances.begin(), distances.end());
     RoutingEntry bestEntry = node.entries[min - distances.begin()];
 
-    treeIn.seekg(config.metadataOffset + bestEntry.childNodeId * config.nodeSizeInBytes);
+    treeFileStream.seekg(config.metadataOffset + bestEntry.childNodeId * config.nodeSizeInBytes);
+//    cout << "Best entry found. Reading his child." << endl;
     Node childNode;
-    cout << "Best entry found. Reading his child." << endl;
-    Node::readNode(treeIn, childNode, config);
-    cout << "Child read. childNodeID: " << childNode.id << " isLeaf? --> " << boolalpha << childNode.isLeaf << endl;
+    Node::readNode(treeFileStream, childNode, config);
+    cout << "Best Entry Found. childNodeID: " << childNode.id << " isLeaf? --> " << boolalpha << childNode.isLeaf << endl;
     insertRec(childNode, data, params);
 
     if (params.split){
@@ -100,18 +93,20 @@ void RTree::insertRec(Node &node, const DataRow & data, RecurseInsertStruct & pa
             node.entries.emplace_back(params.createdEntrySurroundingNewNodeIfSplit);
         }
         childNode.createEntry(bestEntry, config); //enlarge bestEntry, params.enlarge stays true
-        node.rewriteNode(treeOut, config); //child note is rewritten surely - whether leaf or used to be parent
+        node.rewriteNode(treeFileStream, config); //child note is rewritten surely - whether leaf or used to be parent
     }
     else if (params.enlarged){ //means I have to check my mbb
         //determine if best entry needs to be enlarged and enlarge it if needed
         params.enlarged = bestEntry.enlargeEntry(data);
         if (params.enlarged){
-            node.rewriteNode(treeOut, config); //could be optimized here maybe, just one entry changed
+            node.rewriteNode(treeFileStream, config); //could be optimized here maybe, just one entry changed
         }
     }
 }
 
 void RTree::addIntoLeafNode(Node &leafNode, const DataRow & data, RecurseInsertStruct & params) {
+    cout << "Vector size : " << leafNode.entries.size();
+    cout << "  max entry in leaf node: " << config.maxLeafNodeEntries << endl;
     if (leafNode.entries.size() == config.maxLeafNodeEntries){
         params.split = true;
         params.enlarged = true;
@@ -125,7 +120,7 @@ void RTree::addIntoLeafNode(Node &leafNode, const DataRow & data, RecurseInsertS
         leafNode.entries.emplace_back(RoutingEntry(data));
     }
     cout << "Writing leaf node. nodeID: " << leafNode.id << endl;
-    leafNode.rewriteNode(treeOut, config);
+    leafNode.rewriteNode(treeFileStream, config);
 }
 
 void RTree::makeSplit(Node &fullNode, RoutingEntry &createdEntrySurroundingNewNode, const RoutingEntry &entryThatOverflowed) {
@@ -147,13 +142,20 @@ void RTree::makeSplit(Node &fullNode, RoutingEntry &createdEntrySurroundingNewNo
     fullNode.entries = half2;
 
     //Serialize newNode
-    newNode.serializeNode(treeOut, config);
+    newNode.serializeNode(treeFileStream, config);
 
     //With this code createdEntrySurroundingNewNodeIfSplit variable is changed
     newNode.createEntry(createdEntrySurroundingNewNode, config);
 }
 
+void RTree::initStreamsRecreateFile() {
+    treeFileStream.open(config.treeFileName, ios::in | ios::out | ios::binary | ios::trunc);
+}
+
+void RTree::initStreamsExistingFile() {
+    treeFileStream.open(config.treeFileName, ios::in | ios::out | ios::binary | ios::app);
+}
+
 void RTree::closeStreams() {
-    treeOut.close();
-    treeIn.close();
+    treeFileStream.close();
 }

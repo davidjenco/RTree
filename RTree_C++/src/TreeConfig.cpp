@@ -2,13 +2,13 @@
 
 using namespace std;
 
-void TreeConfig::serialize(ofstream &treeOut) {
-    treeOut.write((char *) & numberOfNodes, sizeof(numberOfNodes));
-    treeOut.write((char *) & nodeSizeInBytes, sizeof(nodeSizeInBytes));
-    treeOut.write((char *) & dimension, sizeof(dimension));
-    treeOut.write((char *) & rootId, sizeof(rootId));
+void TreeConfig::serialize(fstream &treeFileStream) {
+    treeFileStream.write((char *) & numberOfNodes, sizeof(numberOfNodes));
+    treeFileStream.write((char *) & nodeSizeInBytes, sizeof(nodeSizeInBytes));
+    treeFileStream.write((char *) & dimension, sizeof(dimension));
+    treeFileStream.write((char *) & rootId, sizeof(rootId));
 
-    if (treeOut.fail())
+    if (treeFileStream.fail())
         throw runtime_error("Error while writing to file (metadata)");
 }
 

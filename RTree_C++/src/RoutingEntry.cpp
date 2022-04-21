@@ -6,33 +6,28 @@ using namespace std;
 
 RoutingEntry::RoutingEntry(const DataRow &dataRow) : childNodeId(dataRow.rowId), from(dataRow.ranges) {}
 
-void RoutingEntry::serializeEntry(ofstream &treeOut, bool inLeafNode) {
-    treeOut.write((char *) & childNodeId, sizeof(childNodeId));
+void RoutingEntry::serializeEntry(fstream &treeFileStream, bool inLeafNode) {
+    treeFileStream.write((char *) & childNodeId, sizeof(childNodeId));
     for (size_t j = 0; j < from.size(); ++j) {
-        treeOut.write((char *) & from[j], sizeof(from[j]));
+        treeFileStream.write((char *) & from[j], sizeof(from[j]));
         if (!inLeafNode){
-            treeOut.write((char *) & to[j], sizeof(to[j]));
+            treeFileStream.write((char *) & to[j], sizeof(to[j]));
         }
     }
 }
 
-void RoutingEntry::readEntry(ifstream &treeIn, RoutingEntry &routingEntry, bool inLeafNode, const TreeConfig & config) {
-    treeIn.read((char *) & routingEntry.childNodeId, sizeof(routingEntry.childNodeId));
+void RoutingEntry::readEntry(fstream &treeFileStream, RoutingEntry &routingEntry, bool inLeafNode, const TreeConfig & config) {
+    treeFileStream.read((char *) & routingEntry.childNodeId, sizeof(routingEntry.childNodeId));
 
 
     int32_t range;
     for (size_t i = 0; i < config.dimension; ++i) {
-        treeIn.read((char *) & range, sizeof(range));
+        treeFileStream.read((char *) & range, sizeof(range));
         routingEntry.from.emplace_back(range);
         if (!inLeafNode){
-            treeIn.read((char *) & range, sizeof(range));
+            treeFileStream.read((char *) & range, sizeof(range));
             routingEntry.to.emplace_back(range);
         }
-    }
-
-    if (treeIn.fail()){
-        treeIn.close();
-        throw runtime_error("Error while reading from file (entry)");
     }
 }
 

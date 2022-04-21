@@ -3,12 +3,12 @@
 
 using namespace std;
 
-void Node::serializeNode(ofstream &treeOut, const TreeConfig & config) {
-    treeOut.write((char *) & id, sizeof(id));
-    treeOut.write((char *) & isLeaf, sizeof(isLeaf));
+void Node::serializeNode(fstream &treeFileStream, const TreeConfig & config) {
+    treeFileStream.write((char *) & id, sizeof(id));
+    treeFileStream.write((char *) & isLeaf, sizeof(isLeaf));
 
     for (size_t i = 0; i < entries.size(); ++i) {
-        entries[i].serializeEntry(treeOut, isLeaf);
+        entries[i].serializeEntry(treeFileStream, isLeaf);
     }
 
     uint32_t maxEntries = config.maxNodeEntries;
@@ -24,21 +24,19 @@ void Node::serializeNode(ofstream &treeOut, const TreeConfig & config) {
         padding.to.assign(config.dimension, INT32_MAX);
 
         for (size_t i = entries.size(); i < maxEntries; ++i) {
-            padding.serializeEntry(treeOut, isLeaf);
+            padding.serializeEntry(treeFileStream, isLeaf);
         }
     }
 
-    if (treeOut.fail()){
-        treeOut.close();
+    if (treeFileStream.fail()){
+        treeFileStream.close();
         throw runtime_error("Error while writing to file (node)");
     }
 }
 
-void Node::readNode(ifstream &treeIn, Node &node, const TreeConfig & config) {
-    treeIn.read((char *) & node.id, sizeof(node.id));
-    if (treeIn.fail())
-        cout << "Sth happened" << endl;
-    treeIn.read((char *) & node.isLeaf, sizeof(node.isLeaf));
+void Node::readNode(fstream &treeFileStream, Node &node, const TreeConfig & config) {
+    treeFileStream.read((char *) & node.id, sizeof(node.id));
+    treeFileStream.read((char *) & node.isLeaf, sizeof(node.isLeaf));
 
 
     uint32_t maxEntries = config.maxNodeEntries;
@@ -48,7 +46,7 @@ void Node::readNode(ifstream &treeIn, Node &node, const TreeConfig & config) {
 
     RoutingEntry routingEntry;
     for (int i = 0; i < maxEntries; ++i) {
-        RoutingEntry::readEntry(treeIn, routingEntry, node.isLeaf, config);
+        RoutingEntry::readEntry(treeFileStream, routingEntry, node.isLeaf, config);
         if (routingEntry.childNodeId == UINT32_MAX){
             break;
         }
@@ -57,8 +55,8 @@ void Node::readNode(ifstream &treeIn, Node &node, const TreeConfig & config) {
         }
     }
 
-    if (treeIn.fail()){
-        treeIn.close();
+    if (treeFileStream.fail()){
+        treeFileStream.close();
         throw runtime_error("Error while reading from file (node)");
     }
 }
@@ -82,9 +80,8 @@ Node & Node::createEntry(RoutingEntry &routingEntry, const TreeConfig &config) {
     return *this;
 }
 
-void Node::rewriteNode(std::ofstream & treeOut, const TreeConfig &config) {
-    treeOut.seekp(config.metadataOffset + (id * config.nodeSizeInBytes));
-    this->serializeNode(treeOut, config);
-    treeOut.seekp(treeOut.tellp());
+void Node::rewriteNode(std::fstream & treeFileStream, const TreeConfig &config) {
+    treeFileStream.seekp(config.metadataOffset + (id * config.nodeSizeInBytes));
+    this->serializeNode(treeFileStream, config);
+    treeFileStream.seekp(ios::end);
 }
-

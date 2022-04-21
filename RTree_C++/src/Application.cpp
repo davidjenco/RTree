@@ -28,9 +28,9 @@ void Application::dealWithInput() {
             dimension = stoi(argv[3]);
 
             auto tree = RTree(dimension);
-            tree.initStreams();
+            tree.initStreamsRecreateFile();
             tree.serializeInit();
-            cout << "RTree first node build and serialized." << endl;
+
             DataGenerator generator(dimension, dataFileName);
             generator.generate(tree);
 
