@@ -106,33 +106,10 @@ size_t getFileSize(TreeConfig & config){
 }
 void readWriteNodes(){
 
-    auto tree = RTree(5);
+    auto tree = RTree(2);
     tree.initStreamsRecreateFile();
     tree.serializeInit();
 
-    TreeConfig config = tree.getConfig();
-
-    RoutingEntry simple;
-    simple.childNodeId = 10;
-    simple.from = {100, 120, 130};
-
-    RoutingEntry simpleLeaf;
-    simpleLeaf.childNodeId = 11;
-    simple.from = {100, 120, 130};
-    simple.to = {-10, -120, -130};
-
-    Node leaf;
-    leaf.id = 2;
-    leaf.isLeaf = true;
-    leaf.entries.assign(10, simpleLeaf);
-
-    tree.closeStreams();
-//    size_t fileSize = config.metadataOffset + config.nodeSizeInBytes;
-//    cout << "File size: " << getFileSize(config) << endl;
-//    assert(fileSize == getFileSize(config));
-
-
-//    RTree tree(3);
 //    TreeConfig config = tree.getConfig();
 //
 //    RoutingEntry simple;
@@ -148,19 +125,8 @@ void readWriteNodes(){
 //    leaf.id = 2;
 //    leaf.isLeaf = true;
 //    leaf.entries.assign(10, simpleLeaf);
-//
-//    tree.initStreamsRecreateFile();
-//    tree.serializeInit();
-//
-//    size_t fileSize = config.metadataOffset + config.nodeSizeInBytes;
-//    cout << "File size: " << getFileSize(config) << endl;
-//    assert(fileSize == getFileSize(config));
-//
-//    leaf.serializeNode(tree.getTreeFileStream(), config);
-//    fileSize += config.nodeSizeInBytes;
-//    assert(fileSize == getFileSize(config));
-//
-//    tree.closeStreams();
+
+    tree.closeStreams();
 }
 
 int main (){
