@@ -62,6 +62,8 @@ void Node::readNode(fstream &treeFileStream, Node &node, const TreeConfig & conf
 }
 
 Node & Node::createEntry(RoutingEntry &routingEntry, const TreeConfig &config) {
+    routingEntry.from.clear();
+    routingEntry.to.clear();
     for (int i = 0; i < config.dimension; ++i) {
         vector<int32_t> tmp;
         for (auto & entry : entries) {

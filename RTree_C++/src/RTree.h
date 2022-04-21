@@ -51,9 +51,10 @@ public:
     ///Creates new file (or overwrites origin one)
     void initStreamsRecreateFile();
 
-    ///Opens stream to existing file and sets cursor to end position
+    ///Opens stream to existing file and sets cursor to end position with ate flag
     void initStreamsExistingFile();
 
+    ///Closes stream
     void closeStreams();
 
     const TreeConfig &getConfig() const;
