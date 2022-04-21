@@ -51,4 +51,10 @@ public:
     void initStreamsExistingFile();
 
     void closeStreams();
+
+    const TreeConfig &getConfig() const;
+
+    const Node &getRoot() const;
+
+    std::fstream &getTreeFileStream();
 };

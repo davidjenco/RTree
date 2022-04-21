@@ -159,3 +159,15 @@ void RTree::initStreamsExistingFile() {
 void RTree::closeStreams() {
     treeFileStream.close();
 }
+
+const TreeConfig &RTree::getConfig() const {
+    return config;
+}
+
+const Node &RTree::getRoot() const {
+    return root;
+}
+
+fstream &RTree::getTreeFileStream(){
+    return treeFileStream;
+}

@@ -1,9 +1,11 @@
 #include <vector>
 #include <iostream>
+#include <fstream>
 #include <cassert>
 #include <random>
 #include "InsertCandidate.h"
 #include "Node.h"
+#include "RTree.h"
 
 using namespace std;
 
@@ -95,10 +97,75 @@ void rewriteInFile(){
 
     ofs.close();
 }
+size_t getFileSize(TreeConfig & config){
+    ifstream treeFile(config.treeFileName, ios::binary);
+    treeFile.seekg(ios::end);
+    size_t fileSize = treeFile.tellg();
+    treeFile.seekg(ios::beg);
+    return fileSize;
+}
+void readWriteNodes(){
+
+    auto tree = RTree(5);
+    tree.initStreamsRecreateFile();
+    tree.serializeInit();
+
+    TreeConfig config = tree.getConfig();
+
+    RoutingEntry simple;
+    simple.childNodeId = 10;
+    simple.from = {100, 120, 130};
+
+    RoutingEntry simpleLeaf;
+    simpleLeaf.childNodeId = 11;
+    simple.from = {100, 120, 130};
+    simple.to = {-10, -120, -130};
+
+    Node leaf;
+    leaf.id = 2;
+    leaf.isLeaf = true;
+    leaf.entries.assign(10, simpleLeaf);
+
+    tree.closeStreams();
+//    size_t fileSize = config.metadataOffset + config.nodeSizeInBytes;
+//    cout << "File size: " << getFileSize(config) << endl;
+//    assert(fileSize == getFileSize(config));
+
+
+//    RTree tree(3);
+//    TreeConfig config = tree.getConfig();
+//
+//    RoutingEntry simple;
+//    simple.childNodeId = 10;
+//    simple.from = {100, 120, 130};
+//
+//    RoutingEntry simpleLeaf;
+//    simpleLeaf.childNodeId = 11;
+//    simple.from = {100, 120, 130};
+//    simple.to = {-10, -120, -130};
+//
+//    Node leaf;
+//    leaf.id = 2;
+//    leaf.isLeaf = true;
+//    leaf.entries.assign(10, simpleLeaf);
+//
+//    tree.initStreamsRecreateFile();
+//    tree.serializeInit();
+//
+//    size_t fileSize = config.metadataOffset + config.nodeSizeInBytes;
+//    cout << "File size: " << getFileSize(config) << endl;
+//    assert(fileSize == getFileSize(config));
+//
+//    leaf.serializeNode(tree.getTreeFileStream(), config);
+//    fileSize += config.nodeSizeInBytes;
+//    assert(fileSize == getFileSize(config));
+//
+//    tree.closeStreams();
+}
 
 int main (){
-    testCandidate();
-    testMBBfromNode();
-    rewriteInFile();
-
+//    testCandidate();
+//    testMBBfromNode();
+//    rewriteInFile();
+    readWriteNodes();
 }

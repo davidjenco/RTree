@@ -9,7 +9,7 @@ private:
     int dimension;
     int min = 99;
     int max = 9999;
-    int numberOfEntries = 100;
+    int numberOfEntries = 3;
     std::string dataFileName;
 
 public:
