@@ -29,7 +29,7 @@ struct RoutingEntry{
 
     bool enlargeEntry(const DataRow & point);
 
-    bool intersects(const std::vector<int32_t> & searchFrom, const std::vector<int32_t> & searchTo);
+    bool intersects(const std::vector<int32_t> & searchFrom, const std::vector<int32_t> & searchTo) const;
 
-    static bool intervalIntersect(std::pair<int32_t, int32_t> i1, std::pair<int32_t, int32_t> i2);
+    static bool sortedIntervalsIntersect(const std::pair<int32_t, int32_t> & i1, const std::pair<int32_t, int32_t> & i2);
 };

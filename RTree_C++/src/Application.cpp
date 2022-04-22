@@ -1,4 +1,5 @@
 #include <fstream>
+#include <sstream>
 #include "Application.h"
 #include "DataGenerator.h"
 #include "RTree.h"
@@ -10,6 +11,7 @@ Application::Application(int argc, char **argv) : argc(argc), argv(argv) {
 }
 
 void Application::start() {
+
     dealWithInput();
 
     //TODO...
@@ -39,30 +41,54 @@ void Application::dealWithInput() {
             break;
         }
         case SEARCH: {
+            auto tree = RTree();
+
+            tree.initStreamsExistingFile();
+            tree.loadTree();
+
             if (string("--sequence") == argv[2]){
-                if (argc != 10 || string("--range") != argv[3])
-                    throw invalid_argument("Invalid argument content or count");
-                sequenceSearch();
+
+                if (string("--range") != argv[3] || 2 * tree.getConfig().dimension != (argc - 4))
+                    throw invalid_argument("Invalid argument - wrong number of ranges in query according to current tree");
+
+                vector<int32_t> searchFrom;
+                vector<int32_t> searchTo;
+                for (uint32_t i = 0; i < 2 * tree.getConfig().dimension; i+=2) {
+                    if (stoi(argv[i + 4]) <= stoi(argv[i + 5])){
+                        searchFrom.push_back(stoi(argv[i + 4]));
+                        searchTo.push_back(stoi(argv[i + 5]));
+                    }else{
+                        searchFrom.push_back(stoi(argv[i + 5]));
+                        searchTo.push_back(stoi(argv[i + 4]));
+                    }
+                }
+
+                sequenceSearch(searchFrom, searchTo);
+
             }
             else if (string("--range") == argv[2]){
-                auto tree = RTree();
-
-                tree.initStreamsExistingFile();
-                tree.loadTree();
 
                 if (2 * tree.getConfig().dimension != (argc - 3))
                     throw invalid_argument("Invalid argument - wrong number of ranges in query according to current tree");
 
                 vector<int32_t> searchFrom;
                 vector<int32_t> searchTo;
-                for (uint32_t i = 0; i < tree.getConfig().dimension; ++i) {
-                    searchFrom.push_back(stoi(argv[i + 3]));
-                    searchTo.push_back(stoi(argv[i + 3]));
+                for (uint32_t i = 0; i < 2 * tree.getConfig().dimension; i+=2) {
+                    if (stoi(argv[i + 3]) <= stoi(argv[i + 4])){
+                        searchFrom.push_back(stoi(argv[i + 3]));
+                        searchTo.push_back(stoi(argv[i + 4]));
+                    }else{
+                        searchFrom.push_back(stoi(argv[i + 4]));
+                        searchTo.push_back(stoi(argv[i + 3]));
+                    }
                 }
 
-                auto res = tree.rangeSearch(searchFrom, searchTo);
+                auto results = tree.rangeSearch(searchFrom, searchTo);
 
-                //TODO vypsat výsledek
+                for (auto & res : results) {
+                    cout << res << " ";
+                }
+                cout << endl;
             }
 
             break;
@@ -77,26 +103,41 @@ void Application::dealWithInput() {
 
 }
 
-void Application::sequenceSearch() {
-    vector<pair<int, int>> ranges;
-    ranges.emplace_back(stoi(argv[4]), stoi(argv[5]));
-    ranges.emplace_back(stoi(argv[6]), stoi(argv[7]));
-    ranges.emplace_back(stoi(argv[8]), stoi(argv[9])); //this is not parametrized and works only for 3 dimensional data
+void Application::sequenceSearch(const vector<int32_t> &searchFrom, const vector<int32_t> &searchTo) {
+    ifstream dataInputFile (dataFileName); //TODO přiřadit jako stream do Application
+    set<uint32_t> results;
 
-    vector<int> foundIds;
+    string line;
+    while (getline(dataInputFile, line)){
+        istringstream iss (line);
+        uint32_t id;
+        iss >> id;
+        int32_t value;
+        vector<int32_t> row;
+        while (iss >> value){
+            row.emplace_back(value);
+        }
 
-    ifstream ifs(dataFileName);
-    while (!ifs.eof()){
-        int id, dim1, dim2, dim3;
-        ifs >> id >> dim1 >> dim2 >> dim3;
-        if (dim1 >= ranges[0].first && dim1 <= ranges[0].second &&
-            dim2 >= ranges[1].first && dim2 <= ranges[1].second &&
-            dim3 >= ranges[2].first && dim3 <= ranges[2].second){
-            foundIds.emplace_back(id);
+        if (containsPoint(row, searchFrom, searchTo))
+            results.insert(id);
+//            printf("Searching %d in (%d-%d) and searching %d in (%d-%d)\n", row[0], searchFrom[0], searchTo[0], row[1], searchFrom[1], searchTo[1]);
+    }
+
+    for (auto & res : results) {
+        cout << res << " ";
+    }
+    cout << endl;
+
+    dataInputFile.close();
+}
+
+bool Application::containsPoint(const vector<int32_t> &row, const vector<int32_t> &searchFrom,
+                                const vector<int32_t> &searchTo) {
+    for (size_t j = 0; j < searchFrom.size(); ++j) {
+        if (searchFrom[j] > row[j] || searchTo[j] < row[j]){
+            return false;
         }
     }
 
-    for (const auto & id : foundIds) {
-        cout << "Found " << id << endl;
-    }
+    return true;
 }

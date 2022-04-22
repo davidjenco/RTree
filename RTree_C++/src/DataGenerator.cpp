@@ -26,6 +26,7 @@ void DataGenerator::generate(RTree &tree) {
         }
         tree.insert(data);
     }
+    dataOutFile.close();
 }
 
 //https://stackoverflow.com/questions/5008804/generating-random-integer-from-a-range

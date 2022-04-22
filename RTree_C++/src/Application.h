@@ -22,7 +22,9 @@ public:
     void dealWithInput();
 
     ///Makes sequence range search in data file (for comparing to R-tree queries)
-    void sequenceSearch();
+    void sequenceSearch(const std::vector<int32_t> & searchFrom, const std::vector<int32_t> & searchTo);
+
+    static bool containsPoint(const std::vector<int32_t> & row, const std::vector<int32_t> & searchFrom, const std::vector<int32_t> & searchTo);
 };
 
 

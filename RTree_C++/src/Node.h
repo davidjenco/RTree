@@ -2,6 +2,7 @@
 
 #include <utility>
 #include <vector>
+#include <set>
 #include "RoutingEntry.h"
 #include "TreeConfig.h"
 
@@ -30,4 +31,8 @@ struct Node{
     ///but depending on node type (leaf or no leaf) it calculates min max on certain dimension from either only from
     ///values (when leaf) or both from and to values (when no leaf))
     Node & createEntry(RoutingEntry & routingEntry, const TreeConfig & config);
+
+    void collectPoints(std::set<uint32_t> & result, const std::vector<int32_t> & searchFrom, const std::vector<int32_t> & searchTo) const;
+
+
 };

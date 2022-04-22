@@ -198,6 +198,7 @@ fstream &RTree::getTreeFileStream(){
 }
 
 void RTree::loadTree() {
+    treeFileStream.seekg(0, ios::beg);
     config.readConfig(treeFileStream);
 
     config.maxNodeEntries = calculateMaxNodeEntries();
@@ -211,16 +212,27 @@ std::set<uint32_t> RTree::rangeSearch(const vector<int32_t> &searchFrom, const v
     Node rootNode;
     Node::readNode(treeFileStream, rootNode, config);
 
-    if(rootNode.isLeaf)
-        //TODO collectPoints();
-
-    for (size_t i = 0; i < rootNode.entries.size(); ++i) {
-//        if (intersects(rootNode.entries[i], searchFrom, searchTo)){
-//            TODO searchEntry(result, ...)
-//        }
-
-    }
+    rangeSearchRec(result, rootNode, searchFrom, searchTo);
 
     return result;
+}
+
+void RTree::rangeSearchRec(set<uint32_t> &result, const Node &node, const vector<int32_t> &searchFrom,
+                           const vector<int32_t> &searchTo) {
+    if(node.isLeaf){
+        node.collectPoints(result, searchFrom, searchTo);
+        return;
+    }
+    else{
+        for (auto & entry : node.entries) {
+            if (entry.intersects(searchFrom, searchTo)){
+                Node childNode;
+                treeFileStream.seekg(config.metadataOffset + entry.childNodeId * config.nodeSizeInBytes, ios::beg);
+                Node::readNode(treeFileStream, childNode, config);
+                rangeSearchRec(result, childNode, searchFrom, searchTo);
+            }
+        }
+    }
+
 }
 

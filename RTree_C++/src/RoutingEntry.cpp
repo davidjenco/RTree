@@ -83,26 +83,28 @@ bool RoutingEntry::enlargeEntry(const DataRow &point) {
     return enlarged;
 }
 
-bool RoutingEntry::intersects(const vector<int32_t> &searchFrom, const vector<int32_t> &searchTo) {
+bool RoutingEntry::intersects(const vector<int32_t> &searchFrom, const vector<int32_t> &searchTo) const{
     if (from.size() == to.size()) //TODO remove, just test
         throw logic_error("Checking intersect, from and to size doesn't correspond");
 
     bool flag = true;
+    pair<int32_t, int32_t> sortedPair;
     for (size_t i = 0; i < from.size(); ++i) {
-        if (intervalIntersect(make_pair(searchFrom[i], searchTo[i]), make_pair(from[i], to[i]))){
+        if(from[i] > to[i])
+            sortedPair = make_pair(to[i], from[i]);
+        else
+            sortedPair = make_pair(from[i], to[i]);
+        //Query ranges are sorted already (during input)
+        if (!sortedIntervalsIntersect(make_pair(searchFrom[i], searchTo[i]), sortedPair)){
             flag = false;
+            break;
         }
     }
 
     return flag;
 }
 
-bool RoutingEntry::intervalIntersect(pair<int32_t, int32_t> i1, pair<int32_t, int32_t> i2) {
-    if(i1.first > i1.second)
-        swap(i1.first, i1.second);
-    if(i2.first > i2.second)
-        swap(i2.first, i2.second);
-
+bool RoutingEntry::sortedIntervalsIntersect(const pair<int32_t, int32_t> & i1, const pair<int32_t, int32_t> & i2) {
     bool flag = true;
     if(i1.second < i2.first)
         flag = false;

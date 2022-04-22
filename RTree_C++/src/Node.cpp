@@ -91,3 +91,17 @@ void Node::rewriteNode(std::fstream & treeFileStream, const TreeConfig &config) 
         throw runtime_error("Error while rewriting node");
     }
 }
+
+void Node::collectPoints(set<uint32_t> &result, const vector<int32_t> & searchFrom, const vector<int32_t> & searchTo) const{
+    for (auto & entry : entries) {
+        bool flag = true;
+        for (size_t j = 0; j < searchFrom.size(); ++j) {
+            if (searchFrom[j] > entry.from[j] || searchTo[j] < entry.from[j]){
+                flag = false;
+                break;
+            }
+        }
+        if (flag)
+            result.insert(entry.childNodeId);
+    }
+}

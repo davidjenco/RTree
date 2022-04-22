@@ -67,6 +67,8 @@ public:
 
     std::set<uint32_t> rangeSearch(const std::vector<int32_t> & searchFrom, const std::vector<int32_t> & searchTo);
 
+    void rangeSearchRec(std::set<uint32_t> & result, const Node & node, const std::vector<int32_t> & searchFrom, const std::vector<int32_t> & searchTo);
+
     const TreeConfig &getConfig() const;
 
     const Node &getRoot() const;
