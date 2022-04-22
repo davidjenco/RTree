@@ -16,12 +16,12 @@ void RTree::configInit(int dimension) {
     config.numberOfNodes++;
     config.rootId = 0;
 
-//    for (; config.maxNodeEntries < 50 ; config.minPossibleNodeSize += 400) {
+//    for (; config.maxNodeEntries < config.minNodeEntries ; config.minPossibleNodeSize += 104) {
         config.nodeSizeInBytes = calculateNodeSize();
         config.maxNodeEntries = calculateMaxNodeEntries();
         config.maxLeafNodeEntries = calculateMaxLeafNodeEntries();
 //    }
-//    config.minPossibleNodeSize -= 400;
+//    config.minPossibleNodeSize -= 104;
 }
 
 void RTree::serializeInit() {

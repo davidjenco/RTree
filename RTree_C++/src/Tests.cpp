@@ -134,14 +134,14 @@ void readWriteNodes(){
 
 void testCalculations(){
     RTree tree;
-    tree.configInit(4);
+    tree.configInit(2);
 
     cout << tree.getConfig().maxNodeEntries << " in node and " << tree.getConfig().maxLeafNodeEntries << " in leaf" << endl;
 
     assert((tree.getConfig().nodeSizeInBytes - sizeof(tree.getRoot().id) - sizeof(tree.getRoot().isLeaf)) % tree.getConfig().maxNodeEntries == 0);
     assert((tree.getConfig().nodeSizeInBytes - sizeof(tree.getRoot().id) - sizeof(tree.getRoot().isLeaf)) % tree.getConfig().maxLeafNodeEntries == 0);
 
-    cout << tree.getConfig().minPossibleNodeSize << endl;
+    cout << tree.getConfig().minPossibleNodeSize << " " << tree.getConfig().nodeSizeInBytes << endl;
 }
 
 int main (){
