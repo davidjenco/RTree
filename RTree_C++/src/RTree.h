@@ -18,11 +18,16 @@ public:
     ///Explicit means that this constructor will be used only if it's explicitly typed
     RTree();
 
+    ///Configures configuration data of the tree depending on dimension (mainly calling calculations methods)
     void configInit(int dimension);
 
     ///Serializes metadata of the tree and also initialized root node (maybe will be modified in future)
     void serializeInit();
 
+    ///Calculates one node size in bytes depending on set dimension and minimum possible node size. It calculates
+    ///lcm of ground entry and routing entry and then the multiplicative "k" that stands for the least multiplicative
+    ///of lcm grater than minimum possible node size (ceil of division). This ensures that calculations
+    ///"calculateMaxNodeEntries" and "calculateMaxLeafNodeEntries" have integer (not double) value
     uint32_t calculateNodeSize() const;
 
     ///Calculates number of entries that can fit inside one node (method depends on size of one node and dimension)
