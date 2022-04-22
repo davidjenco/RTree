@@ -69,8 +69,8 @@ void RTree::insert(const DataRow & data) {
 
     //printf("\nRootNode read, rootID: %d number of entries: %lu/%d  while node size is %d\n"
     //       , rootNode.id, rootNode.entries.size(), config.maxNodeEntries, config.nodeSizeInBytes);
-    cout << endl << "RootNode. ";
-    rootNode.print(config);
+    //cout << endl << "RootNode. ";
+    //rootNode.print(config);
     RecurseInsertStruct initParams;
     insertRec(rootNode, data, initParams);
 
@@ -91,10 +91,10 @@ void RTree::insert(const DataRow & data) {
 
 void RTree::insertRec(Node &node, const DataRow & data, RecurseInsertStruct & params) {
     if (node.isLeaf){
-        cout << "Adding to leaf node. Row: ";
-        for(auto & i: data.ranges)
-            cout << i << " ";
-        cout << endl;
+        //cout << "Adding to leaf node. Row: ";
+        //for(auto & i: data.ranges)
+        //    cout << i << " ";
+        //cout << endl;
         addIntoLeafNode(node, data, params);
         return;
     }
@@ -111,8 +111,8 @@ void RTree::insertRec(Node &node, const DataRow & data, RecurseInsertStruct & pa
     Node childNode;
     Node::readNode(treeFileStream, childNode, config);
 //    cout << "Best Entry Found. childNodeID: " << childNode.id << " isLeaf? --> " << boolalpha << childNode.isLeaf << endl;
-    cout << "childNode. ";
-    childNode.print(config);
+//    cout << "childNode. ";
+//    childNode.print(config);
     insertRec(childNode, data, params);
 
     if (params.split){
@@ -132,8 +132,8 @@ void RTree::insertRec(Node &node, const DataRow & data, RecurseInsertStruct & pa
             node.rewriteNode(treeFileStream, config); //could be optimized here maybe, just one entry changed
         }
     }
-    cout << "childNode---> Update ";
-    childNode.print(config);
+    //cout << "childNode---> Update ";
+    //childNode.print(config);
 }
 
 void RTree::addIntoLeafNode(Node &leafNode, const DataRow & data, RecurseInsertStruct & params) {

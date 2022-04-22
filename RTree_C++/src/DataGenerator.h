@@ -7,9 +7,9 @@
 class DataGenerator {
 private:
     int dimension;
-    int min = 99;
+    int min = -5299;
     int max = 9999;
-    int numberOfEntries = 100;
+    int numberOfEntries = 20000;
     std::string dataFileName;
 
 public:
