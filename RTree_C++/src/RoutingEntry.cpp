@@ -82,3 +82,33 @@ bool RoutingEntry::enlargeEntry(const DataRow &point) {
 
     return enlarged;
 }
+
+bool RoutingEntry::intersects(const vector<int32_t> &searchFrom, const vector<int32_t> &searchTo) {
+    if (from.size() == to.size()) //TODO remove, just test
+        throw logic_error("Checking intersect, from and to size doesn't correspond");
+
+    bool flag = true;
+    for (size_t i = 0; i < from.size(); ++i) {
+        if (intervalIntersect(make_pair(searchFrom[i], searchTo[i]), make_pair(from[i], to[i]))){
+            flag = false;
+        }
+    }
+
+    return flag;
+}
+
+bool RoutingEntry::intervalIntersect(pair<int32_t, int32_t> i1, pair<int32_t, int32_t> i2) {
+    if(i1.first > i1.second)
+        swap(i1.first, i1.second);
+    if(i2.first > i2.second)
+        swap(i2.first, i2.second);
+
+    bool flag = true;
+    if(i1.second < i2.first)
+        flag = false;
+    if(i2.second < i1.first)
+        flag = false;
+    return flag;
+}
+
+

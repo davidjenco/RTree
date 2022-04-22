@@ -28,4 +28,8 @@ struct RoutingEntry{
     size_t calculateArea() const;
 
     bool enlargeEntry(const DataRow & point);
+
+    bool intersects(const std::vector<int32_t> & searchFrom, const std::vector<int32_t> & searchTo);
+
+    static bool intervalIntersect(std::pair<int32_t, int32_t> i1, std::pair<int32_t, int32_t> i2);
 };

@@ -12,3 +12,13 @@ void TreeConfig::serialize(fstream &treeFileStream) {
         throw runtime_error("Error while writing to file (metadata)");
 }
 
+void TreeConfig::readConfig(fstream &treeFileStream) {
+    treeFileStream.read((char *) & numberOfNodes, sizeof(numberOfNodes));
+    treeFileStream.read((char *) & nodeSizeInBytes, sizeof(nodeSizeInBytes));
+    treeFileStream.read((char *) & dimension, sizeof(dimension));
+    treeFileStream.read((char *) & rootId, sizeof(rootId));
+
+    if (treeFileStream.fail())
+        throw runtime_error("Error while reading from file (metadata)");
+}
+

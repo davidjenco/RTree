@@ -144,11 +144,32 @@ void testCalculations(){
     cout << tree.getConfig().minPossibleNodeSize << " " << tree.getConfig().nodeSizeInBytes << endl;
 }
 
-int main (){
+void stoiTest(int argc, char *argv[]){
+    try {
+        cout << "zadal jsi: " << stoi(argv[1]) << endl;
+    } catch(invalid_argument & e){
+        cout << "Pozor co píšeš." << endl;
+    }
+}
+
+void intervalIntersect(){
+    assert(RoutingEntry::intervalIntersect(make_pair(1, 2), make_pair(1, 3)) == true);
+    assert(RoutingEntry::intervalIntersect(make_pair(1, 2), make_pair(2, 3)) == true);
+    assert(RoutingEntry::intervalIntersect(make_pair(2, 1), make_pair(3, 2)) == true);
+    assert(RoutingEntry::intervalIntersect(make_pair(1, 2), make_pair(3, 5)) == false);
+    assert(RoutingEntry::intervalIntersect(make_pair(2, 1), make_pair(5, 3)) == false);
+    assert(RoutingEntry::intervalIntersect(make_pair(10, 16), make_pair(3, 5)) == false);
+    assert(RoutingEntry::intervalIntersect(make_pair(10, 16), make_pair(3, 11)) == true);
+    assert(RoutingEntry::intervalIntersect(make_pair(16, 10), make_pair(11, 3)) == true);
+}
+
+int main (int argc, char *argv[]){
 //    testCandidate();
 //    testMBBfromNode();
 //    rewriteInFile();
 //    readWriteNodes();
+//    testCalculations();
+//    stoiTest(argc, argv);
 
-    testCalculations();
+    intervalIntersect();
 }

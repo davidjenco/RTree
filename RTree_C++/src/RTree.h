@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <set>
 #include <fstream>
 #include "Node.h"
 #include "TreeConfig.h"
@@ -15,7 +16,6 @@ private:
     std::fstream treeFileStream;
 
 public:
-    ///Explicit means that this constructor will be used only if it's explicitly typed
     RTree();
 
     ///Configures configuration data of the tree depending on dimension (mainly calling calculations methods)
@@ -61,6 +61,11 @@ public:
 
     ///Closes stream
     void closeStreams();
+
+    ///Loads tree metadata from existing file and does needed calculations to set tree configuration
+    void loadTree();
+
+    std::set<uint32_t> rangeSearch(const std::vector<int32_t> & searchFrom, const std::vector<int32_t> & searchTo);
 
     const TreeConfig &getConfig() const;
 

@@ -196,3 +196,31 @@ const Node &RTree::getRoot() const {
 fstream &RTree::getTreeFileStream(){
     return treeFileStream;
 }
+
+void RTree::loadTree() {
+    config.readConfig(treeFileStream);
+
+    config.maxNodeEntries = calculateMaxNodeEntries();
+    config.maxLeafNodeEntries = calculateMaxLeafNodeEntries();
+}
+
+std::set<uint32_t> RTree::rangeSearch(const vector<int32_t> &searchFrom, const vector<int32_t> &searchTo) {
+    set<uint32_t> result;
+
+    treeFileStream.seekg(config.metadataOffset + config.rootId * config.nodeSizeInBytes, ios::beg);
+    Node rootNode;
+    Node::readNode(treeFileStream, rootNode, config);
+
+    if(rootNode.isLeaf)
+        //TODO collectPoints();
+
+    for (size_t i = 0; i < rootNode.entries.size(); ++i) {
+//        if (intersects(rootNode.entries[i], searchFrom, searchTo)){
+//            TODO searchEntry(result, ...)
+//        }
+
+    }
+
+    return result;
+}
+

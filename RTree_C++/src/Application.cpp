@@ -45,7 +45,24 @@ void Application::dealWithInput() {
                 sequenceSearch();
             }
             else if (string("--range") == argv[2]){
-                //TODO range search
+                auto tree = RTree();
+
+                tree.initStreamsExistingFile();
+                tree.loadTree();
+
+                if (2 * tree.getConfig().dimension != (argc - 3))
+                    throw invalid_argument("Invalid argument - wrong number of ranges in query according to current tree");
+
+                vector<int32_t> searchFrom;
+                vector<int32_t> searchTo;
+                for (uint32_t i = 0; i < tree.getConfig().dimension; ++i) {
+                    searchFrom.push_back(stoi(argv[i + 3]));
+                    searchTo.push_back(stoi(argv[i + 3]));
+                }
+
+                auto res = tree.rangeSearch(searchFrom, searchTo);
+
+                //TODO vypsat výsledek
             }
 
             break;
