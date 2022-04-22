@@ -67,7 +67,8 @@ void RTree::insert(const DataRow & data) {
 
     Node::readNode(treeFileStream, rootNode, config);
 
-    cout << endl << "RootNode read. rootID: " << rootNode.id << " isLeaf? --> " << boolalpha << rootNode.isLeaf << endl;
+    printf("\nRootNode read, rootID: %d number of entries: %lu/%d  while node size is %d\n"
+           , rootNode.id, rootNode.entries.size(), config.maxNodeEntries, config.nodeSizeInBytes);
     RecurseInsertStruct initParams;
     insertRec(rootNode, data, initParams);
 
@@ -88,7 +89,7 @@ void RTree::insert(const DataRow & data) {
 
 void RTree::insertRec(Node &node, const DataRow & data, RecurseInsertStruct & params) {
     if (node.isLeaf){
-        cout << "Adding to leaf node. nodeID: " << node.id << endl;
+//        cout << "Adding to leaf node. nodeID: " << node.id << endl;
         addIntoLeafNode(node, data, params);
         return;
     }
@@ -104,7 +105,7 @@ void RTree::insertRec(Node &node, const DataRow & data, RecurseInsertStruct & pa
 //    cout << "Best entry found. Reading his child." << endl;
     Node childNode;
     Node::readNode(treeFileStream, childNode, config);
-    cout << "Best Entry Found. childNodeID: " << childNode.id << " isLeaf? --> " << boolalpha << childNode.isLeaf << endl;
+//    cout << "Best Entry Found. childNodeID: " << childNode.id << " isLeaf? --> " << boolalpha << childNode.isLeaf << endl;
     insertRec(childNode, data, params);
 
     if (params.split){
@@ -127,21 +128,21 @@ void RTree::insertRec(Node &node, const DataRow & data, RecurseInsertStruct & pa
 }
 
 void RTree::addIntoLeafNode(Node &leafNode, const DataRow & data, RecurseInsertStruct & params) {
-    cout << "Vector size : " << leafNode.entries.size();
-    cout << "  max entry in leaf node: " << config.maxLeafNodeEntries << endl;
+//    cout << "Vector size : " << leafNode.entries.size();
+//    cout << "  max entry in leaf node: " << config.maxLeafNodeEntries << endl;
     if (leafNode.entries.size() == config.maxLeafNodeEntries){
         params.split = true;
         params.enlarged = true;
-        cout << "Split in adding to leaf." << endl;
+//        cout << "Split in adding to leaf." << endl;
         makeSplit(leafNode, params.createdEntrySurroundingNewNodeIfSplit, RoutingEntry(data));
     }
     else{
         params.split = false;
         params.enlarged = true;
-        cout << "No split in adding to leaf." << endl;
+//        cout << "No split in adding to leaf." << endl;
         leafNode.entries.emplace_back(RoutingEntry(data));
     }
-    cout << "Writing leaf node. nodeID: " << leafNode.id << endl;
+//    cout << "Writing leaf node. nodeID: " << leafNode.id << endl;
     leafNode.rewriteNode(treeFileStream, config);
 }
 
