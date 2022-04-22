@@ -85,5 +85,9 @@ Node & Node::createEntry(RoutingEntry &routingEntry, const TreeConfig &config) {
 void Node::rewriteNode(std::fstream & treeFileStream, const TreeConfig &config) {
     treeFileStream.seekp(config.metadataOffset + (id * config.nodeSizeInBytes), ios::beg);
     serializeNode(treeFileStream, config);
-    treeFileStream.seekp(0, ios::end);
+    treeFileStream.seekp(0, ios::end); //not needed now, I'd say
+    if (treeFileStream.fail()){
+        treeFileStream.close();
+        throw runtime_error("Error while rewriting node");
+    }
 }

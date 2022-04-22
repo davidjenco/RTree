@@ -76,10 +76,11 @@ void RTree::insert(const DataRow & data) {
         newRoot.isLeaf = false;
         newRoot.id = config.numberOfNodes++;
         newRoot.entries.emplace_back(initParams.createdEntrySurroundingNewNodeIfSplit);
-        RoutingEntry newEntrySurroundingOldRoot; //toCoNamZbyloZOldRootPoTomCoJsmeJejRozstipli
+        RoutingEntry newEntrySurroundingOldRoot;
         rootNode.createEntry(newEntrySurroundingOldRoot, config);
         newRoot.entries.emplace_back(newEntrySurroundingOldRoot);
 
+        treeFileStream.seekp(0, ios::end);
         newRoot.serializeNode(treeFileStream, config);
         config.rootId = newRoot.id;
     }
@@ -163,6 +164,7 @@ void RTree::makeSplit(Node &fullNode, RoutingEntry &createdEntrySurroundingNewNo
     fullNode.entries = half2;
 
     //Serialize newNode
+    treeFileStream.seekp(0, ios::end);
     newNode.serializeNode(treeFileStream, config);
 
     //With this code createdEntrySurroundingNewNodeIfSplit variable is changed
