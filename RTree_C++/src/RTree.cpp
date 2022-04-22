@@ -8,7 +8,7 @@
 using namespace std;
 
 RTree::RTree() {
-    root = Node(0, true, vector<RoutingEntry>());
+    root = Node(0, true, vector<shared_ptr<RoutingEntry>>());
 }
 
 void RTree::configInit(int dimension) {
@@ -67,8 +67,10 @@ void RTree::insert(const DataRow & data) {
 
     Node::readNode(treeFileStream, rootNode, config);
 
-    printf("\nRootNode read, rootID: %d number of entries: %lu/%d  while node size is %d\n"
-           , rootNode.id, rootNode.entries.size(), config.maxNodeEntries, config.nodeSizeInBytes);
+    //printf("\nRootNode read, rootID: %d number of entries: %lu/%d  while node size is %d\n"
+    //       , rootNode.id, rootNode.entries.size(), config.maxNodeEntries, config.nodeSizeInBytes);
+    cout << endl << "RootNode. ";
+    rootNode.print(config);
     RecurseInsertStruct initParams;
     insertRec(rootNode, data, initParams);
 
@@ -77,8 +79,8 @@ void RTree::insert(const DataRow & data) {
         newRoot.isLeaf = false;
         newRoot.id = config.numberOfNodes++;
         newRoot.entries.emplace_back(initParams.createdEntrySurroundingNewNodeIfSplit);
-        RoutingEntry newEntrySurroundingOldRoot;
-        rootNode.createEntry(newEntrySurroundingOldRoot, config);
+        shared_ptr<RoutingEntry> newEntrySurroundingOldRoot = make_shared<RoutingEntry>();
+        rootNode.rewriteEntry(newEntrySurroundingOldRoot, config);
         newRoot.entries.emplace_back(newEntrySurroundingOldRoot);
 
         treeFileStream.seekp(0, ios::end);
@@ -89,23 +91,28 @@ void RTree::insert(const DataRow & data) {
 
 void RTree::insertRec(Node &node, const DataRow & data, RecurseInsertStruct & params) {
     if (node.isLeaf){
-//        cout << "Adding to leaf node. nodeID: " << node.id << endl;
+        cout << "Adding to leaf node. Row: ";
+        for(auto & i: data.ranges)
+            cout << i << " ";
+        cout << endl;
         addIntoLeafNode(node, data, params);
         return;
     }
 //    cout << "Choosing best entry in nodeID: " << node.id << endl;
     vector<InsertCandidate> distances;
     for (const auto & entry : node.entries) {
-        distances.emplace_back(entry.calculateDistance(data.ranges), entry.calculateArea());
+        distances.emplace_back(entry->calculateDistance(data.ranges), entry->calculateArea());
     }
     auto min = min_element(distances.begin(), distances.end());
-    RoutingEntry bestEntry = node.entries[min - distances.begin()];
+    shared_ptr<RoutingEntry> bestEntry = node.entries[min - distances.begin()];
 
-    treeFileStream.seekg(config.metadataOffset + bestEntry.childNodeId * config.nodeSizeInBytes, ios::beg);
+    treeFileStream.seekg(config.metadataOffset + bestEntry->childNodeId * config.nodeSizeInBytes, ios::beg);
 //    cout << "Best entry found. Reading his child." << endl;
     Node childNode;
     Node::readNode(treeFileStream, childNode, config);
 //    cout << "Best Entry Found. childNodeID: " << childNode.id << " isLeaf? --> " << boolalpha << childNode.isLeaf << endl;
+    cout << "childNode. ";
+    childNode.print(config);
     insertRec(childNode, data, params);
 
     if (params.split){
@@ -115,16 +122,18 @@ void RTree::insertRec(Node &node, const DataRow & data, RecurseInsertStruct & pa
             params.split = false;
             node.entries.emplace_back(params.createdEntrySurroundingNewNodeIfSplit);
         }
-        childNode.createEntry(bestEntry, config); //enlarge bestEntry, params.enlarge stays true
+        childNode.rewriteEntry(bestEntry, config); //enlarge bestEntry, params.enlarge stays true
         node.rewriteNode(treeFileStream, config); //child note is rewritten surely - whether leaf or used to be parent
     }
     else if (params.enlarged){ //means I have to check my mbb
         //determine if best entry needs to be enlarged and enlarge it if needed
-        params.enlarged = bestEntry.enlargeEntry(data);
+        params.enlarged = bestEntry->enlargeEntry(data);
         if (params.enlarged){
             node.rewriteNode(treeFileStream, config); //could be optimized here maybe, just one entry changed
         }
     }
+    cout << "childNode---> Update ";
+    childNode.print(config);
 }
 
 void RTree::addIntoLeafNode(Node &leafNode, const DataRow & data, RecurseInsertStruct & params) {
@@ -134,19 +143,19 @@ void RTree::addIntoLeafNode(Node &leafNode, const DataRow & data, RecurseInsertS
         params.split = true;
         params.enlarged = true;
 //        cout << "Split in adding to leaf." << endl;
-        makeSplit(leafNode, params.createdEntrySurroundingNewNodeIfSplit, RoutingEntry(data));
+        makeSplit(leafNode, params.createdEntrySurroundingNewNodeIfSplit, make_shared<RoutingEntry>(RoutingEntry(data)));
     }
     else{
         params.split = false;
         params.enlarged = true;
 //        cout << "No split in adding to leaf." << endl;
-        leafNode.entries.emplace_back(RoutingEntry(data));
+        leafNode.entries.emplace_back(make_shared<RoutingEntry>(RoutingEntry(data)));
     }
 //    cout << "Writing leaf node. nodeID: " << leafNode.id << endl;
     leafNode.rewriteNode(treeFileStream, config);
 }
 
-void RTree::makeSplit(Node &fullNode, RoutingEntry &createdEntrySurroundingNewNode, const RoutingEntry &entryThatOverflowed) {
+void RTree::makeSplit(Node &fullNode, shared_ptr<RoutingEntry> &createdEntrySurroundingNewNode, const shared_ptr<RoutingEntry> &entryThatOverflowed) {
     //Create newNode and distribute entries between full and new node
     Node newNode;
     newNode.id = config.numberOfNodes++;
@@ -158,8 +167,8 @@ void RTree::makeSplit(Node &fullNode, RoutingEntry &createdEntrySurroundingNewNo
     shuffle(fullNode.entries.begin(), fullNode.entries.end(), rng);
 
     size_t const half_size = fullNode.entries.size() / 2;
-    vector<RoutingEntry> half1 (fullNode.entries.begin(), fullNode.entries.begin() + half_size);
-    vector<RoutingEntry> half2 (fullNode.entries.begin() + half_size, fullNode.entries.end());
+    vector<shared_ptr<RoutingEntry>> half1 (fullNode.entries.begin(), fullNode.entries.begin() + half_size);
+    vector<shared_ptr<RoutingEntry>> half2 (fullNode.entries.begin() + half_size, fullNode.entries.end());
 
     newNode.entries = half1;
     fullNode.entries = half2;
@@ -168,8 +177,9 @@ void RTree::makeSplit(Node &fullNode, RoutingEntry &createdEntrySurroundingNewNo
     treeFileStream.seekp(0, ios::end);
     newNode.serializeNode(treeFileStream, config);
 
+    createdEntrySurroundingNewNode = make_shared<RoutingEntry>();
     //With this code createdEntrySurroundingNewNodeIfSplit variable is changed
-    newNode.createEntry(createdEntrySurroundingNewNode, config);
+    newNode.rewriteEntry(createdEntrySurroundingNewNode, config);
 }
 
 void RTree::initStreamsRecreateFile() {
@@ -225,14 +235,18 @@ void RTree::rangeSearchRec(set<uint32_t> &result, const Node &node, const vector
     }
     else{
         for (auto & entry : node.entries) {
-            if (entry.intersects(searchFrom, searchTo)){
+            if (entry->intersects(searchFrom, searchTo)){
                 Node childNode;
-                treeFileStream.seekg(config.metadataOffset + entry.childNodeId * config.nodeSizeInBytes, ios::beg);
+                treeFileStream.seekg(config.metadataOffset + entry->childNodeId * config.nodeSizeInBytes, ios::beg);
                 Node::readNode(treeFileStream, childNode, config);
                 rangeSearchRec(result, childNode, searchFrom, searchTo);
             }
         }
     }
+}
 
+void RTree::saveConfig() {
+    treeFileStream.seekp(0, ios::beg);
+    config.serialize(treeFileStream);
 }
 

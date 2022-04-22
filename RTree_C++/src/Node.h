@@ -3,6 +3,7 @@
 #include <utility>
 #include <vector>
 #include <set>
+#include <memory>
 #include "RoutingEntry.h"
 #include "TreeConfig.h"
 
@@ -11,11 +12,11 @@ struct Node{
 
     uint32_t id;
     bool isLeaf;
-    std::vector<RoutingEntry> entries;
+    std::vector<std::shared_ptr<RoutingEntry>> entries;
 
     Node() = default;
 
-    Node(uint32_t id, bool isLeaf, std::vector<RoutingEntry> entries) : id(id), isLeaf(isLeaf), entries(std::move(entries)) {}
+    Node(uint32_t id, bool isLeaf, std::vector<std::shared_ptr<RoutingEntry>> entries) : id(id), isLeaf(isLeaf), entries(std::move(entries)) {}
 
     ///Serializes one node of the tree into binary file
     void serializeNode(std::fstream & treeFileStream, const TreeConfig & config);
@@ -27,12 +28,12 @@ struct Node{
     ///Reads one node from binary file
     static void readNode(std::fstream & treeFileStream, Node & node, const TreeConfig & config);
 
-    ///Creates new RoutingEntry from node (so it means it always creates mbb, not point --> from and to is always set
+    ///Rewrites RoutingEntry from node (so it means it always creates mbb, not point --> from and to is always set
     ///but depending on node type (leaf or no leaf) it calculates min max on certain dimension from either only from
     ///values (when leaf) or both from and to values (when no leaf))
-    Node & createEntry(RoutingEntry & routingEntry, const TreeConfig & config);
+    Node & rewriteEntry(std::shared_ptr<RoutingEntry> & routingEntry, const TreeConfig & config);
 
     void collectPoints(std::set<uint32_t> & result, const std::vector<int32_t> & searchFrom, const std::vector<int32_t> & searchTo) const;
 
-
+    void print(const TreeConfig & config) const;
 };

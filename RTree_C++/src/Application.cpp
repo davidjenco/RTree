@@ -37,6 +37,8 @@ void Application::dealWithInput() {
             DataGenerator generator(dimension, dataFileName);
             generator.generate(tree);
 
+
+            tree.saveConfig();
             tree.closeStreams();
             break;
         }

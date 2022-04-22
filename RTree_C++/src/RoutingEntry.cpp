@@ -84,7 +84,8 @@ bool RoutingEntry::enlargeEntry(const DataRow &point) {
 }
 
 bool RoutingEntry::intersects(const vector<int32_t> &searchFrom, const vector<int32_t> &searchTo) const{
-    if (from.size() == to.size()) //TODO remove, just test
+    cout << from.size() << " " << to.size() << endl;
+    if (from.size() != to.size()) //TODO remove, just test
         throw logic_error("Checking intersect, from and to size doesn't correspond");
 
     bool flag = true;

@@ -9,7 +9,7 @@ struct TreeConfig {
     std::string treeFileName = "../tree";
     int metadataOffset = 16;
     uint32_t minNodeEntries = 30; //TODO nastavit pak dynamicky podle dimenze a toho maxu
-    uint32_t minPossibleNodeSize = 1029;
+    uint32_t minPossibleNodeSize = 130;
     uint32_t maxNodeEntries = 0;
     uint32_t maxLeafNodeEntries;
 
