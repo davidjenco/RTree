@@ -6,7 +6,7 @@
 ///Configuration structure for RTree (these hardcoded values will apply when creating whole new tree with generate (bulk load)
 ///but trees that are loaded from file will overwrite these values with their own values)
 struct TreeConfig {
-    std::string treeFileName = "../tree";
+    std::string treeFileName = "../res/tree";
     int metadataOffset = 16;
     uint32_t minNodeEntries = 30; //TODO nastavit pak dynamicky podle dimenze a toho maxu
     uint32_t minPossibleNodeSize = 400;

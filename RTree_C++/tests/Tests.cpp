@@ -3,9 +3,9 @@
 #include <fstream>
 #include <cassert>
 #include <random>
-#include "InsertCandidate.h"
-#include "Node.h"
-#include "RTree.h"
+#include "../src/InsertCandidate.h"
+#include "../src/Node.h"
+#include "../src/RTree.h"
 
 using namespace std;
 
@@ -40,33 +40,33 @@ void testDistributeEntriesOnHalves(){
     cout << endl;
 }
 
-void testMBBfromNode(){
-
-    TreeConfig conf;
-    conf.dimension = 3;
-
-    RoutingEntry a;
-    RoutingEntry b;
-    RoutingEntry c;
-
-    a.from = {-10, 2, 3};
-    b.from = {2, 3, 1};
-    c.from = {3, 9, 2};
-    a.to   = {2, 10, 4};
-    b.to   = {3, 4, 2};
-    c.to   = {4, 2, 30};
-    vector<RoutingEntry> entries = {a, b, c};
-
-    Node n(1, true, entries);
-    RoutingEntry parent;
-
-    n.createEntry(parent, conf);
-    assert( parent.from.size() == conf.dimension );
-    for (size_t i = 0; i < parent.from.size(); ++i) {
-        cout << i << ": <" << parent.from[i] << "; " << parent.to[i] << ">" << endl;
-    }
-    assert(parent.childNodeId == n.id);
-}
+//void testMBBfromNode(){
+//
+//    TreeConfig conf;
+//    conf.dimension = 3;
+//
+//    RoutingEntry a;
+//    RoutingEntry b;
+//    RoutingEntry c;
+//
+//    a.from = {-10, 2, 3};
+//    b.from = {2, 3, 1};
+//    c.from = {3, 9, 2};
+//    a.to   = {2, 10, 4};
+//    b.to   = {3, 4, 2};
+//    c.to   = {4, 2, 30};
+//    vector<RoutingEntry> entries = {a, b, c};
+//
+//    Node n(1, true, entries);
+//    RoutingEntry parent;
+//
+//    n.rewriteEntry(parent, conf);
+//    assert( parent.from.size() == conf.dimension );
+//    for (size_t i = 0; i < parent.from.size(); ++i) {
+//        cout << i << ": <" << parent.from[i] << "; " << parent.to[i] << ">" << endl;
+//    }
+//    assert(parent.childNodeId == n.id);
+//}
 
 void swapInVec(){
     vector<int> vec = {1, 2, 3};
@@ -173,4 +173,5 @@ int main (int argc, char *argv[]){
 //    stoiTest(argc, argv);
 
     intervalIntersect();
+    return 0;
 }
