@@ -8,8 +8,10 @@ void TreeConfig::serialize(fstream &treeFileStream) {
     treeFileStream.write((char *) & dimension, sizeof(dimension));
     treeFileStream.write((char *) & rootId, sizeof(rootId));
 
-    if (treeFileStream.fail())
+    if (treeFileStream.fail()){
+        treeFileStream.close();
         throw runtime_error("Error while writing to file (metadata)");
+    }
 }
 
 void TreeConfig::readConfig(fstream &treeFileStream) {
@@ -18,7 +20,9 @@ void TreeConfig::readConfig(fstream &treeFileStream) {
     treeFileStream.read((char *) & dimension, sizeof(dimension));
     treeFileStream.read((char *) & rootId, sizeof(rootId));
 
-    if (treeFileStream.fail())
+    if (treeFileStream.fail()){
+        treeFileStream.close();
         throw runtime_error("Error while reading from file (metadata)");
+    }
 }
 

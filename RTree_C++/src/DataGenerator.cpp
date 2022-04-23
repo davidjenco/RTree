@@ -7,7 +7,7 @@
 
 using namespace std;
 
-DataGenerator::DataGenerator(int dimension, string dataFileName) : dimension(dimension),
+DataGenerator::DataGenerator(uint32_t dimension, string dataFileName) : dimension(dimension),
                                                                    dataFileName(std::move(dataFileName)) {}
 
 void DataGenerator::generate(RTree &tree) {

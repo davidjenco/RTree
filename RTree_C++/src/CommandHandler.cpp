@@ -29,27 +29,45 @@ void CommandHandler::printHelpTable() {
     cout << "\t\t" << " insert x y ..." << endl;
 }
 
-int CommandHandler::dealWithInput(string &input) {
-
-
-    return 0;
-}
-
-int CommandHandler::readDimension() const {
+int CommandHandler::readDimension() {
     int dim;
 
     cout << "Enter dimension: " << endl;
     if(!(cin >> dim) || dim < 1) {
-        cout << "Dimension must be positive integer." << endl;
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << "Dimension must be positive integer" << endl;
+        clearCin();
         return 0;
     }
 
     return dim;
 }
 
-int CommandHandler::readInputRanges(vector<int32_t> &searchFrom, vector<int32_t> &searchTo, const uint32_t &dimension) {
 
 
-    return 0;
+bool CommandHandler::readInputRanges(vector<int32_t> &searchFrom, vector<int32_t> &searchTo, const uint32_t &dimension) {
+    for (uint32_t i = 0; i < dimension; ++i) {
+        int32_t from, to;
+
+        if(!(cin >> from >> to)){
+            clearCin();
+            cout << "Wrong range entered" << endl;
+            return false;
+        }
+
+        if (from <= to){
+            searchFrom.push_back(from);
+            searchTo.push_back(to);
+        }else{
+            searchFrom.push_back(to);
+            searchTo.push_back(from);
+        }
+
+    }
+
+    return true;
+}
+
+void CommandHandler::clearCin() {
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 }

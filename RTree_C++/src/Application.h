@@ -6,7 +6,6 @@
 ///Wrapper class for whole application run (the main leading class)
 class Application {
 private:
-    int dimension;
     CommandHandler commandHandler;
     std::string dataFileName = "../res/data.txt"; //careful on file placement --> relative path depends on binary path (now in cmake-build-debug)
 
@@ -16,9 +15,6 @@ public:
     ///Starts application and it's calculations and operations depending on user input/request
     void start();
 
-    ///Parses input and reacts on different actions
-    void dealWithInput();
-
     ///Makes sequence range search in data file (for comparing to R-tree queries)
     void doTheRangeSearch(const std::vector<int32_t> & searchFrom, const std::vector<int32_t> & searchTo);
 
@@ -26,7 +22,7 @@ public:
 
     void generate();
 
-    void sequenceRangeSearch();
+    void rangeSearch(int action);
 };
 
 
