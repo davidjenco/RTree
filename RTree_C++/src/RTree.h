@@ -19,7 +19,7 @@ public:
     RTree();
 
     ///Configures configuration data of the tree depending on dimension (mainly calling calculations methods)
-    void configInit(int dimension);
+    void configInit(uint32_t dimension);
 
     ///Serializes metadata of the tree and also initialized root node (maybe will be modified in future)
     void serializeInit();

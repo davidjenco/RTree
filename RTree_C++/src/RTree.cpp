@@ -13,7 +13,7 @@ RTree::RTree() {
     root = Node(0, true, vector<shared_ptr<RoutingEntry>>());
 }
 
-void RTree::configInit(int dimension) {
+void RTree::configInit(uint32_t dimension) {
     config.dimension = dimension;
     config.numberOfNodes++;
     config.rootId = 0;

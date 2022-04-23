@@ -4,18 +4,12 @@
 
 using namespace std;
 
-int main(int argc, char * argv []) {
-    Application treeApp(argc, argv);
+int main() {
+    Application treeApp;
     try {
         treeApp.start();
-    } catch (invalid_argument & invalidArgument){
-        CommandHandler::printHelpTable(argv[0]);
-    } catch (out_of_range & outOfRangeOfCommands){ //thrown when input is not found in command map in CommandHandler
-        CommandHandler::printHelpTable(argv[0]);
     } catch (runtime_error & runtimeError){ //thrown when working with files goes wrong
         cout << "Runtime error: " << runtimeError.what() << endl;
-    } catch (logic_error & e){ //thrown in intersects method (RoutingEntry.h)
-        cout << "Logical error: " << e.what() << endl;
     }
 
     return 0;

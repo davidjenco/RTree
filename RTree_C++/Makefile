@@ -1,7 +1,7 @@
 CXXFLAGS=-Wall -pedantic -std=c++2a -g
 
 HEADERS = $(wildcard src/*.h)
-SOURCES = $(wildcard src/*.cpp)
+SOURCES = $(wildcard src/*.cpp) #shell find src/ ! -name "main.cpp" -name "*.cpp"
 OBJECTS = $(SOURCES:src/%.cpp=build/%.o)
 PROGRAM = rtree
 

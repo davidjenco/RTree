@@ -6,6 +6,7 @@
 #include "../src/InsertCandidate.h"
 #include "../src/Node.h"
 #include "../src/RTree.h"
+#include "../src/CommandHandler.h"
 
 using namespace std;
 
@@ -164,6 +165,14 @@ void intervalIntersect(){
 //    assert(RoutingEntry::sortedIntervalsIntersect(make_pair(16, 10), make_pair(11, 3)) == true);
 }
 
+void testInput(){
+    CommandHandler cmd;
+    int a = cmd.readDimension();
+    int b = cmd.readDimension();
+
+    cout << "Zadal jsi: " << a << " a potom " << b << endl;
+}
+
 int main (int argc, char *argv[]){
 //    testCandidate();
 //    testMBBfromNode();
@@ -172,6 +181,7 @@ int main (int argc, char *argv[]){
 //    testCalculations();
 //    stoiTest(argc, argv);
 
-    intervalIntersect();
+//    intervalIntersect();
+    testInput();
     return 0;
 }
