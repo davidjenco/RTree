@@ -41,7 +41,7 @@ void Application::start() {
                 break;
             }
             case INSERT:{
-
+                insert();
                 break;
             }
             default:{
@@ -131,4 +131,43 @@ void Application::printResult(const set<uint32_t> &result) {
         cout << res << " ";
     }
     cout << endl;
+}
+
+void Application::insert() {
+    auto tree = RTree();
+
+    tree.initStreamsExistingFile();
+    tree.loadTree();
+
+    DataRow dataRow(countLinesInDataFile());
+    if (!CommandHandler::readInputPoint(dataRow.ranges, tree.getConfig().dimension)){
+        tree.closeStreams();
+        return;
+    }
+
+    tree.insert(dataRow);
+    tree.closeStreams();
+
+    writePointToDataFile(dataRow);
+
+    cout << "Done" << endl;
+}
+
+void Application::writePointToDataFile(const DataRow & dataRow) {
+    ofstream dataOutputFile (dataFileName, ios::app);
+
+    dataOutputFile << dataRow.rowId << " ";
+    for (size_t i = 0; i < dataRow.ranges.size(); ++i) {
+        if (i == dataRow.ranges.size() - 1)
+            dataOutputFile << dataRow.ranges[i] << endl;
+        else
+            dataOutputFile << dataRow.ranges[i] << " ";
+    }
+}
+
+size_t Application::countLinesInDataFile() {
+    std::ifstream inFile(dataFileName);
+    size_t lines = std::count(std::istreambuf_iterator<char>(inFile),std::istreambuf_iterator<char>(), '\n');
+    inFile.close();
+    return lines;
 }

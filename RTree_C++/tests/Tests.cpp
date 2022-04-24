@@ -135,7 +135,7 @@ void readWriteNodes(){
 
 void testCalculations(){
     RTree tree;
-    tree.configInit(2);
+    tree.configInit(50);
 
     cout << tree.getConfig().maxNodeEntries << " in node and " << tree.getConfig().maxLeafNodeEntries << " in leaf" << endl;
 
@@ -173,6 +173,12 @@ void testInput(){
     cout << "Zadal jsi: " << a << " a potom " << b << endl;
 }
 
+void countLines(){
+    std::fstream inFile("../res/data.txt", ios::app);
+    cout << std::count(std::istreambuf_iterator<char>(inFile),
+               std::istreambuf_iterator<char>(), '\n') << endl;
+}
+
 int main (int argc, char *argv[]){
 //    testCandidate();
 //    testMBBfromNode();
@@ -182,6 +188,8 @@ int main (int argc, char *argv[]){
 //    stoiTest(argc, argv);
 
 //    intervalIntersect();
-    testInput();
+//    testInput();
+//    countLines();
+    testCalculations();
     return 0;
 }

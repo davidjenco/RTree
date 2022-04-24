@@ -3,6 +3,7 @@
 #include <set>
 #include "CommandHandler.h"
 #include "Action.h"
+#include "DataRow.h"
 
 ///Wrapper class for whole application run (the main leading class)
 class Application {
@@ -25,8 +26,14 @@ public:
 
     void rangeSearch(int action);
 
+    void insert();
+
     ///Prints result of the search on std::cout
     static void printResult(const std::set<uint32_t> & result);
+
+    void writePointToDataFile(const DataRow & dataRow);
+
+    size_t countLinesInDataFile();
 };
 
 

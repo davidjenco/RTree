@@ -74,3 +74,19 @@ void CommandHandler::clearCin() {
     cin.clear();
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 }
+
+bool CommandHandler::readInputPoint(vector<int32_t> &point, const uint32_t &dimension) {
+    cout << "Enter point ranges for dimension " << dimension << endl;
+    for (uint32_t i = 0; i < dimension; ++i) {
+        int32_t range;
+
+        if(!(cin >> range)){
+            clearCin();
+            cout << "Wrong point range entered" << endl;
+            return false;
+        }
+        point.push_back(range);
+    }
+    clearCin();
+    return true;
+}
