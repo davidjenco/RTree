@@ -1,5 +1,6 @@
 #pragma once
 
+#include <set>
 #include "CommandHandler.h"
 #include "Action.h"
 
@@ -16,13 +17,15 @@ public:
     void start();
 
     ///Makes sequence range search in data file (for comparing to R-tree queries)
-    void doTheRangeSearch(const std::vector<int32_t> & searchFrom, const std::vector<int32_t> & searchTo);
+    std::set<uint32_t> doTheRangeSearch(const std::vector<int32_t> & searchFrom, const std::vector<int32_t> & searchTo);
 
     static bool containsPoint(const std::vector<int32_t> & row, const std::vector<int32_t> & searchFrom, const std::vector<int32_t> & searchTo);
 
     void generate();
 
     void rangeSearch(int action);
+
+    static void printResult(const std::set<uint32_t> & result);
 };
 
 

@@ -38,6 +38,7 @@ int CommandHandler::readDimension() {
         clearCin();
         return 0;
     }
+    clearCin();
 
     return dim;
 }
@@ -45,6 +46,7 @@ int CommandHandler::readDimension() {
 
 
 bool CommandHandler::readInputRanges(vector<int32_t> &searchFrom, vector<int32_t> &searchTo, const uint32_t &dimension) {
+    cout << "Enter ranges for dimension " << dimension << endl;
     for (uint32_t i = 0; i < dimension; ++i) {
         int32_t from, to;
 
@@ -61,8 +63,9 @@ bool CommandHandler::readInputRanges(vector<int32_t> &searchFrom, vector<int32_t
             searchFrom.push_back(to);
             searchTo.push_back(from);
         }
-
     }
+
+    clearCin();
 
     return true;
 }

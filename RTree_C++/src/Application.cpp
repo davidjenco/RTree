@@ -66,6 +66,7 @@ void Application::generate() {
 
     tree.saveConfig();
     tree.closeStreams();
+    cout << "Done" << endl;
 }
 
 void Application::rangeSearch(int action) {
@@ -83,14 +84,14 @@ void Application::rangeSearch(int action) {
     }
 
     if (action == TREE_RANGE_SEARCH)
-        tree.rangeSearch(searchFrom, searchTo);
+        printResult(tree.rangeSearch(searchFrom, searchTo));
     else
-        doTheRangeSearch(searchFrom, searchTo);
+        printResult(doTheRangeSearch(searchFrom, searchTo));
 
     tree.closeStreams();
 }
 
-void Application::doTheRangeSearch(const vector<int32_t> &searchFrom, const vector<int32_t> &searchTo) {
+set<uint32_t> Application::doTheRangeSearch(const vector<int32_t> &searchFrom, const vector<int32_t> &searchTo) {
     ifstream dataInputFile (dataFileName);
     set<uint32_t> results;
 
@@ -110,12 +111,8 @@ void Application::doTheRangeSearch(const vector<int32_t> &searchFrom, const vect
 //            printf("Searching %d in (%d-%d) and searching %d in (%d-%d)\n", row[0], searchFrom[0], searchTo[0], row[1], searchFrom[1], searchTo[1]);
     }
 
-    for (auto & res : results) {
-        cout << res << " ";
-    }
-    cout << endl;
-
     dataInputFile.close();
+    return results;
 }
 
 bool Application::containsPoint(const vector<int32_t> &row, const vector<int32_t> &searchFrom,
@@ -129,68 +126,9 @@ bool Application::containsPoint(const vector<int32_t> &row, const vector<int32_t
     return true;
 }
 
-//void Application::dealWithInput() {
-//    auto action = commandHandler.getAction(argv [0], argv[1]);
-//    switch (action) {
-//        case SEARCH: {
-//            auto tree = RTree();
-//
-//            tree.initStreamsExistingFile();
-//            tree.loadTree();
-//
-//            if (string("--sequence") == argv[2]){
-//
-//                if (string("--range") != argv[3] || 2 * tree.getConfig().dimension != (argc - 4))
-//                    throw invalid_argument("Invalid argument - wrong number of ranges in query according to current tree");
-//
-//                vector<int32_t> searchFrom;
-//                vector<int32_t> searchTo;
-//                for (uint32_t i = 0; i < 2 * tree.getConfig().dimension; i+=2) {
-//                    if (stoi(argv[i + 4]) <= stoi(argv[i + 5])){
-//                        searchFrom.push_back(stoi(argv[i + 4]));
-//                        searchTo.push_back(stoi(argv[i + 5]));
-//                    }else{
-//                        searchFrom.push_back(stoi(argv[i + 5]));
-//                        searchTo.push_back(stoi(argv[i + 4]));
-//                    }
-//                }
-//
-//                doTheRangeSearch(searchFrom, searchTo);
-//
-//            }
-//            else if (string("--range") == argv[2]){
-//
-//                if (2 * tree.getConfig().dimension != (argc - 3))
-//                    throw invalid_argument("Invalid argument - wrong number of ranges in query according to current tree");
-//
-//                vector<int32_t> searchFrom;
-//                vector<int32_t> searchTo;
-//                for (uint32_t i = 0; i < 2 * tree.getConfig().dimension; i+=2) {
-//                    if (stoi(argv[i + 3]) <= stoi(argv[i + 4])){
-//                        searchFrom.push_back(stoi(argv[i + 3]));
-//                        searchTo.push_back(stoi(argv[i + 4]));
-//                    }else{
-//                        searchFrom.push_back(stoi(argv[i + 4]));
-//                        searchTo.push_back(stoi(argv[i + 3]));
-//                    }
-//                }
-//
-//                auto results = tree.rangeSearch(searchFrom, searchTo);
-//
-//                for (auto & res : results) {
-//                    cout << res << " ";
-//                }
-//                cout << endl;
-//            }
-//
-//            break;
-//        }
-//        case INSERT: {
-//            cout << "Insert" << endl; //dummy
-//            break;
-//        }
-//        default: break;
-//    }
-//
-//
-
+void Application::printResult(const set<uint32_t> &result) {
+    for (auto & res : result) {
+        cout << res << " ";
+    }
+    cout << endl;
+}
