@@ -135,7 +135,7 @@ void readWriteNodes(){
 
 void testCalculations(){
     RTree tree;
-    tree.configInit(50);
+    tree.configInit(20);
 
     cout << tree.getConfig().maxNodeEntries << " in node and " << tree.getConfig().maxLeafNodeEntries << " in leaf" << endl;
 
