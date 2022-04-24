@@ -33,6 +33,8 @@ struct Node{
     ///values (when leaf) or both from and to values (when no leaf))
     Node & rewriteEntry(std::shared_ptr<RoutingEntry> & routingEntry, const TreeConfig & config);
 
+    ///Collect points from node that are within queried range (point's value on each dimension has to be among from-to
+    ///range from query)
     void collectPoints(std::set<uint32_t> & result, const std::vector<int32_t> & searchFrom, const std::vector<int32_t> & searchTo) const;
 
     void print(const TreeConfig & config) const;

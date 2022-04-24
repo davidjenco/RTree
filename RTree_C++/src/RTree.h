@@ -66,10 +66,14 @@ public:
     ///Loads tree metadata from existing file and does needed calculations to set tree configuration
     void loadTree();
 
+    ///Serializes changed metadata to file
     void saveConfig();
 
+    ///Does range search in tree, single way right now
     std::set<uint32_t> rangeSearch(const std::vector<int32_t> & searchFrom, const std::vector<int32_t> & searchTo);
 
+    ///Searching tree into depth, if leaf node is hit, it collects all points in queried range, otherwise
+    ///it recursively dive into nodes which intersects with queried range in every dimension
     void rangeSearchRec(std::set<uint32_t> & result, const Node & node, const std::vector<int32_t> & searchFrom, const std::vector<int32_t> & searchTo);
 
     const TreeConfig &getConfig() const;
