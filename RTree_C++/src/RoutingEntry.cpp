@@ -31,22 +31,29 @@ void RoutingEntry::readEntry(fstream &treeFileStream, RoutingEntry &routingEntry
     }
 }
 
-double RoutingEntry::calculateDistance(const vector<int> & ranges) const{
+double RoutingEntry::calculateDistance(const vector<int> & point) const{
 
     vector<int> minDistance;
-    for (size_t i = 0; i < from.size(); ++i) {
-        int start = from[i];
-        int end = to[i];
-        if(start > end)
-            swap(start, end);
+    if (from.size() == to.size()){
+        for (size_t i = 0; i < from.size(); ++i) {
+            int start = from[i];
+            int end = to[i];
+            if(start > end)
+                swap(start, end);
 
-        if(ranges[i] < start)
-            minDistance.emplace_back(start - ranges[i]);
-        else if(start <= ranges[i] && ranges[i] <= end)
-            continue;
-        else if(end < ranges[i])
-            minDistance.emplace_back(ranges[i] - end);
+            if(point[i] < start)
+                minDistance.emplace_back(start - point[i]);
+            else if(start <= point[i] && point[i] <= end)
+                continue;
+            else if(end < point[i])
+                minDistance.emplace_back(point[i] - end);
+        }
+    }else{
+        for (size_t i = 0; i < from.size(); ++i) {
+            minDistance.emplace_back(abs(from[i] - point[i]));
+        }
     }
+
     int result = 0;
     for(auto & i : minDistance)
         result += i * i;

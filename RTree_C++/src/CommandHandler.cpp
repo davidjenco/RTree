@@ -90,3 +90,17 @@ bool CommandHandler::readInputPoint(vector<int32_t> &point, const uint32_t &dime
     clearCin();
     return true;
 }
+
+int CommandHandler::readNumberOfNeighbours() {
+    int count;
+
+    cout << "Enter number of neighbours: " << endl;
+    if(!(cin >> count) || count < 1) {
+        cout << "Number of neighbours must be positive integer" << endl;
+        clearCin();
+        return 0;
+    }
+    clearCin();
+
+    return count;
+}

@@ -29,7 +29,7 @@ void Application::start() {
                 break;
             }
             case SEQUENCE_KNN_SEARCH:{
-
+                knnSearch();
                 break;
             }
             case TREE_RANGE_SEARCH:{
@@ -111,8 +111,44 @@ set<uint32_t> Application::doTheRangeSearch(const vector<int32_t> &searchFrom, c
 //            printf("Searching %d in (%d-%d) and searching %d in (%d-%d)\n", row[0], searchFrom[0], searchTo[0], row[1], searchFrom[1], searchTo[1]);
     }
 
+    if (dataInputFile.fail()){ //TODO eof problem when .fail() maybe
+        dataInputFile.close();
+        throw runtime_error("Error while reading the data file");
+    }
     dataInputFile.close();
     return results;
+}
+
+std::set<KnnSearchStruct> Application::doTheKnnSearch(const vector<int32_t> & queryPoint, const size_t & k) {
+    ifstream dataInputFile (dataFileName);
+    set<KnnSearchStruct> result;
+
+    string line;
+    while (getline(dataInputFile, line)){
+        istringstream iss (line);
+        uint32_t id;
+        iss >> id;
+        int32_t value;
+        vector<int32_t> row;
+        while (iss >> value){
+            row.emplace_back(value);
+        }
+
+        double distance = RoutingEntry (DataRow(row, id)).calculateDistance(queryPoint);
+        if (result.size() < k)
+            result.insert(KnnSearchStruct(id, distance));
+        else if (distance < result.rbegin()->distance){
+            result.insert(KnnSearchStruct(id, distance));
+            result.erase(--result.end());
+        }
+    }
+
+    if (dataInputFile.bad()){ //TODO eof problem when .fail() maybe
+        dataInputFile.close();
+        throw runtime_error("Error while reading the data file");
+    }
+    dataInputFile.close();
+    return result;
 }
 
 bool Application::containsPoint(const vector<int32_t> &row, const vector<int32_t> &searchFrom,
@@ -129,6 +165,13 @@ bool Application::containsPoint(const vector<int32_t> &row, const vector<int32_t
 void Application::printResult(const set<uint32_t> &result) {
     for (auto & res : result) {
         cout << res << " ";
+    }
+    cout << endl;
+}
+
+void Application::printResult(const set<KnnSearchStruct> &result) {
+    for (auto & res : result) {
+        cout << res.id << " ";
     }
     cout << endl;
 }
@@ -170,4 +213,23 @@ size_t Application::countLinesInDataFile() {
     size_t lines = std::count(std::istreambuf_iterator<char>(inFile),std::istreambuf_iterator<char>(), '\n');
     inFile.close();
     return lines;
+}
+
+void Application::knnSearch() {
+    auto tree = RTree();
+    tree.initStreamsExistingFile();
+    tree.loadTree();
+
+    vector<int32_t> queryPoint;
+    if (!CommandHandler::readInputPoint(queryPoint, tree.getConfig().dimension)){
+        tree.closeStreams();
+        return;
+    }
+    int k = CommandHandler::readNumberOfNeighbours();
+    if (!k)
+        return;
+
+    printResult(doTheKnnSearch(queryPoint, k));
+
+    tree.closeStreams();
 }

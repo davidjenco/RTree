@@ -179,6 +179,7 @@ void countLines(){
                std::istreambuf_iterator<char>(), '\n') << endl;
 }
 
+
 int main (int argc, char *argv[]){
 //    testCandidate();
 //    testMBBfromNode();
@@ -190,6 +191,7 @@ int main (int argc, char *argv[]){
 //    intervalIntersect();
 //    testInput();
 //    countLines();
-    testCalculations();
+//    testCalculations();
+
     return 0;
 }
