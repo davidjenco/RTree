@@ -111,7 +111,7 @@ set<uint32_t> Application::doTheRangeSearch(const vector<int32_t> &searchFrom, c
 //            printf("Searching %d in (%d-%d) and searching %d in (%d-%d)\n", row[0], searchFrom[0], searchTo[0], row[1], searchFrom[1], searchTo[1]);
     }
 
-    if (dataInputFile.fail()){ //TODO eof problem when .fail() maybe
+    if (dataInputFile.fail() && !dataInputFile.eof()){
         dataInputFile.close();
         throw runtime_error("Error while reading the data file");
     }
@@ -143,7 +143,7 @@ std::set<KnnSearchStruct> Application::doTheKnnSearch(const vector<int32_t> & qu
         }
     }
 
-    if (dataInputFile.bad()){ //TODO eof problem when .fail() maybe
+    if (dataInputFile.fail() && !dataInputFile.eof()){
         dataInputFile.close();
         throw runtime_error("Error while reading the data file");
     }
