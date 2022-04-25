@@ -15,8 +15,8 @@ RTree::RTree() {
 
 void RTree::configInit(uint32_t dimension) {
     config.dimension = dimension;
-    config.numberOfNodes++;
-    config.rootId = 0;
+    config.numberOfNodes = 0;
+    config.rootId = config.numberOfNodes++;
 
     for (; config.maxNodeEntries < config.minNodeEntries ; config.minPossibleNodeSize += 104) { //TODO change if needed
         config.nodeSizeInBytes = calculateNodeSize();

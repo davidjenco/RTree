@@ -69,6 +69,7 @@ void Application::generate() {
     if (!dimension)
         return;
 
+    tree = RTree();
     tree.configInit(dimension);
     tree.initStreamsRecreateFile();
     tree.serializeInit();
@@ -106,7 +107,7 @@ void Application::insert() {
 
     tree.insert(dataRow);
     writePointToDataFile(dataRow);
-    tree.saveConfig();
+//    tree.saveConfig();
     cout << "Done" << endl;
 }
 

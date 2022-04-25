@@ -14,7 +14,7 @@ struct TreeConfig {
     uint32_t maxLeafNodeEntries;
 
     ///In metadata
-    uint32_t numberOfNodes = 0;
+    uint32_t numberOfNodes;
     uint32_t nodeSizeInBytes;
     uint32_t dimension;
     uint32_t rootId;
