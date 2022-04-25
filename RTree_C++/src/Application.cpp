@@ -82,6 +82,8 @@ void Application::generate() {
 }
 
 void Application::rangeSearch(int action) {
+    if (!checkExistingFile())
+        return;
     tree.loadTree();
 
     vector<int32_t> searchFrom;
@@ -98,6 +100,8 @@ void Application::rangeSearch(int action) {
 }
 
 void Application::insert() {
+    if (!checkExistingFile())
+        return;
     tree.loadTree();
 
     DataRow dataRow(countLinesInDataFile());
@@ -107,11 +111,13 @@ void Application::insert() {
 
     tree.insert(dataRow);
     writePointToDataFile(dataRow);
-//    tree.saveConfig();
+    tree.saveConfig();
     cout << "Done" << endl;
 }
 
 void Application::knnSearch() {
+    if (!checkExistingFile())
+        return;
     tree.loadTree();
 
     vector<int32_t> queryPoint;
@@ -231,11 +237,11 @@ size_t Application::countLinesInDataFile() {
 }
 
 bool Application::checkExistingFile() {
-    bool flag = false;
+    bool flag = true;
     if (!exists("../res/tree")){
         cout << "You have to generate tree first" << endl;
         commandHandler.printHelpTable();
-        flag = true;
+        flag = false;
     }
     return flag;
 }
