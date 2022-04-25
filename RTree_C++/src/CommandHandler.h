@@ -21,7 +21,7 @@ public:
     int getAction(const std::string & cmd);
 
     ///Prints help table showing usage of application
-    static void printHelpTable();
+    void printHelpTable();
 
     ///Reads int value dimension from std::cin and clears rest of std::cin content. Returns 0 if conversion couldn't happen
     ///or non positive dimension was provided

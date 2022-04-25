@@ -15,6 +15,7 @@ private:
     TreeConfig config;
     std::fstream treeFileStream;
 
+
 public:
     RTree();
 

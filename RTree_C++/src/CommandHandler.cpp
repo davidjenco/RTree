@@ -10,6 +10,7 @@ CommandHandler::CommandHandler() {
     commands["search range"] = TREE_RANGE_SEARCH;
     commands["search knn"] = TREE_KNN_SEARCH;
     commands["insert"] = INSERT;
+    commands["help"] = HELP;
 }
 
 int CommandHandler::getAction(const string & cmd) {
@@ -22,11 +23,9 @@ int CommandHandler::getAction(const string & cmd) {
 
 void CommandHandler::printHelpTable() {
     cout << "Usage help:" << endl;
-    cout << "\t\t" << " generate -d [DIMENSION]" << endl;
-    cout << "\t\t" << " search --knn x1 x2 y1 y2 ..." << endl;
-    cout << "\t\t" << " search --range x1 x2 y1 y2 ..." << endl;
-    cout << "\t\t" << " search --sequence --range x1 x2 y1 y1 ..." << endl;
-    cout << "\t\t" << " insert x y ..." << endl;
+    for (auto & cmd : commands) {
+        cout << "\t\t" << cmd.first << endl;
+    }
 }
 
 int CommandHandler::readDimension() {

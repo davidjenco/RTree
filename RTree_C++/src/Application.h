@@ -5,12 +5,14 @@
 #include "Action.h"
 #include "DataRow.h"
 #include "KnnSearchStruct.h"
+#include "RTree.h"
 
 ///Wrapper class for whole application run (the main leading class)
 class Application {
 private:
     CommandHandler commandHandler;
     std::string dataFileName = "../res/data.txt"; //careful on file placement --> relative path depends on binary path (now in cmake-build-debug)
+    RTree tree;
 
 public:
     Application();
@@ -41,6 +43,8 @@ public:
     void writePointToDataFile(const DataRow & dataRow);
 
     size_t countLinesInDataFile();
+
+    bool checkExistingFile();
 };
 
 

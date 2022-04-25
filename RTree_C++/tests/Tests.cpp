@@ -191,7 +191,7 @@ int main (int argc, char *argv[]){
 //    intervalIntersect();
 //    testInput();
 //    countLines();
-//    testCalculations();
+    testCalculations();
 
     return 0;
 }

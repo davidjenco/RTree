@@ -1,21 +1,28 @@
 #include <fstream>
 #include <sstream>
+#include <filesystem>
 #include "Application.h"
 #include "DataGenerator.h"
 #include "RTree.h"
 
 using namespace std;
+using namespace std::filesystem;
 
 Application::Application() {
     commandHandler = CommandHandler();
+    tree = RTree();
 }
 
 void Application::start() {
+    tree.initStreamsExistingFile();
     string input;
 
     while (true){
         getline(cin, input);
+        if (input.empty())
+            continue;
         if (input == "q"){
+            tree.closeStreams();
             break;
         }
 
@@ -44,6 +51,10 @@ void Application::start() {
                 insert();
                 break;
             }
+            case HELP:{
+                commandHandler.printHelpTable();
+                break;
+            }
             default:{
                 continue;
             }
@@ -52,11 +63,12 @@ void Application::start() {
 }
 
 void Application::generate() {
+    tree.closeStreams();
+
     uint32_t dimension = CommandHandler::readDimension();
     if (!dimension)
         return;
 
-    auto tree = RTree();
     tree.configInit(dimension);
     tree.initStreamsRecreateFile();
     tree.serializeInit();
@@ -65,21 +77,16 @@ void Application::generate() {
     generator.generate(tree);
 
     tree.saveConfig();
-    tree.closeStreams();
     cout << "Done" << endl;
 }
 
 void Application::rangeSearch(int action) {
-    auto tree = RTree();
-
-    tree.initStreamsExistingFile();
     tree.loadTree();
 
     vector<int32_t> searchFrom;
     vector<int32_t> searchTo;
 
     if (!CommandHandler::readInputRanges(searchFrom, searchTo, tree.getConfig().dimension)){
-        tree.closeStreams();
         return;
     }
 
@@ -87,8 +94,35 @@ void Application::rangeSearch(int action) {
         printResult(tree.rangeSearch(searchFrom, searchTo));
     else
         printResult(doTheRangeSearch(searchFrom, searchTo));
+}
 
-    tree.closeStreams();
+void Application::insert() {
+    tree.loadTree();
+
+    DataRow dataRow(countLinesInDataFile());
+    if (!CommandHandler::readInputPoint(dataRow.ranges, tree.getConfig().dimension)){
+        return;
+    }
+
+    tree.insert(dataRow);
+    writePointToDataFile(dataRow);
+    tree.saveConfig();
+    cout << "Done" << endl;
+}
+
+void Application::knnSearch() {
+    tree.loadTree();
+
+    vector<int32_t> queryPoint;
+    if (!CommandHandler::readInputPoint(queryPoint, tree.getConfig().dimension)){
+        tree.closeStreams();
+        return;
+    }
+    int k = CommandHandler::readNumberOfNeighbours();
+    if (!k)
+        return;
+
+    printResult(doTheKnnSearch(queryPoint, k));
 }
 
 set<uint32_t> Application::doTheRangeSearch(const vector<int32_t> &searchFrom, const vector<int32_t> &searchTo) {
@@ -176,26 +210,6 @@ void Application::printResult(const set<KnnSearchStruct> &result) {
     cout << endl;
 }
 
-void Application::insert() {
-    auto tree = RTree();
-
-    tree.initStreamsExistingFile();
-    tree.loadTree();
-
-    DataRow dataRow(countLinesInDataFile());
-    if (!CommandHandler::readInputPoint(dataRow.ranges, tree.getConfig().dimension)){
-        tree.closeStreams();
-        return;
-    }
-
-    tree.insert(dataRow);
-    tree.closeStreams();
-
-    writePointToDataFile(dataRow);
-
-    cout << "Done" << endl;
-}
-
 void Application::writePointToDataFile(const DataRow & dataRow) {
     ofstream dataOutputFile (dataFileName, ios::app);
 
@@ -215,21 +229,12 @@ size_t Application::countLinesInDataFile() {
     return lines;
 }
 
-void Application::knnSearch() {
-    auto tree = RTree();
-    tree.initStreamsExistingFile();
-    tree.loadTree();
-
-    vector<int32_t> queryPoint;
-    if (!CommandHandler::readInputPoint(queryPoint, tree.getConfig().dimension)){
-        tree.closeStreams();
-        return;
+bool Application::checkExistingFile() {
+    bool flag = false;
+    if (!exists("../res/tree")){
+        cout << "You have to generate tree first" << endl;
+        commandHandler.printHelpTable();
+        flag = true;
     }
-    int k = CommandHandler::readNumberOfNeighbours();
-    if (!k)
-        return;
-
-    printResult(doTheKnnSearch(queryPoint, k));
-
-    tree.closeStreams();
+    return flag;
 }
