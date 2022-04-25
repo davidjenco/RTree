@@ -7,6 +7,7 @@
 #include "TreeConfig.h"
 #include "RecurseInsertStruct.h"
 #include "DataRow.h"
+#include "TreeCache.h"
 
 ///RTree representation
 class RTree {
@@ -14,6 +15,7 @@ private:
     Node root;
     TreeConfig config;
     std::fstream treeFileStream;
+    TreeCache cache;
 
 
 public:
@@ -75,7 +77,7 @@ public:
 
     ///Searching tree into depth, if leaf node is hit, it collects all points in queried range, otherwise
     ///it recursively dive into nodes which intersects with queried range in every dimension
-    void rangeSearchRec(std::set<uint32_t> & result, const Node & node, const std::vector<int32_t> & searchFrom, const std::vector<int32_t> & searchTo);
+    void rangeSearchRec(std::set<uint32_t> & result, const std::shared_ptr<Node> & nodePtr, const std::vector<int32_t> & searchFrom, const std::vector<int32_t> & searchTo);
 
     const TreeConfig &getConfig() const;
 

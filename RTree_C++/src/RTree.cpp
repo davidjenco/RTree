@@ -48,7 +48,6 @@ uint32_t RTree::calculateNodeSize() const{
 uint32_t RTree::calculateMaxNodeEntries() const{
     Node dummyNode;
     uint32_t result = config.nodeSizeInBytes - sizeof(dummyNode.id) - sizeof(dummyNode.isLeaf);
-    //TODO kdyžtak jet ve for loop a postupně zvyšovat nodeSize pro větší dimenze
     uint32_t dummyEntrySize = 2 * (config.dimension * sizeof(int32_t)) + sizeof(uint32_t);
     return result / dummyEntrySize;
 }
@@ -224,28 +223,23 @@ void RTree::loadTree() {
 std::set<uint32_t> RTree::rangeSearch(const vector<int32_t> &searchFrom, const vector<int32_t> &searchTo) {
     set<uint32_t> result;
 
-    treeFileStream.seekg(config.metadataOffset + config.rootId * config.nodeSizeInBytes, ios::beg);
-    Node rootNode;
-    Node::readNode(treeFileStream, rootNode, config);
-
-    rangeSearchRec(result, rootNode, searchFrom, searchTo);
+    shared_ptr<Node> rootNodePtr = cache.getNode(config.rootId, treeFileStream, config);
+    rangeSearchRec(result, rootNodePtr, searchFrom, searchTo);
 
     return result;
 }
 
-void RTree::rangeSearchRec(set<uint32_t> &result, const Node &node, const vector<int32_t> &searchFrom,
+void RTree::rangeSearchRec(set<uint32_t> &result, const shared_ptr<Node> & nodePtr, const vector<int32_t> &searchFrom,
                            const vector<int32_t> &searchTo) {
-    if(node.isLeaf){
-        node.collectPoints(result, searchFrom, searchTo);
+    if(nodePtr->isLeaf){
+        nodePtr->collectPoints(result, searchFrom, searchTo);
         return;
     }
     else{
-        for (auto & entry : node.entries) {
+        for (auto & entry : nodePtr->entries) {
             if (entry->intersects(searchFrom, searchTo)){
-                Node childNode;
-                treeFileStream.seekg(config.metadataOffset + entry->childNodeId * config.nodeSizeInBytes, ios::beg);
-                Node::readNode(treeFileStream, childNode, config);
-                rangeSearchRec(result, childNode, searchFrom, searchTo);
+                shared_ptr<Node> childNodePtr = cache.getNode(entry->childNodeId, treeFileStream, config);
+                rangeSearchRec(result, childNodePtr, searchFrom, searchTo);
             }
         }
     }
