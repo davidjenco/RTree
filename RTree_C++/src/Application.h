@@ -33,7 +33,7 @@ public:
 
     void insert();
 
-    void knnSearch();
+    void knnSearch(int action);
 
     ///Prints result of the search on std::cout
     static void printResult(const std::set<uint32_t> & result);

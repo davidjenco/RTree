@@ -3,6 +3,7 @@
 #include <map>
 #include <random>
 #include <filesystem>
+#include <queue>
 #include "RTree.h"
 #include "InsertCandidate.h"
 
@@ -242,6 +243,40 @@ void RTree::rangeSearchRec(set<uint32_t> &result, const shared_ptr<Node> & nodeP
                 rangeSearchRec(result, childNodePtr, searchFrom, searchTo);
             }
         }
+    }
+}
+
+void RTree::knnSearch(const vector<int32_t> &queryPoint, const size_t &k, set<KnnSearchStruct> &result) {
+    priority_queue<KnnSearchStruct> qu;
+
+    auto rootNodePtr = cache.getNode(config.rootId, treeFileStream, config);
+    qu.push(KnnSearchStruct(rootNodePtr, 0));
+    while (!qu.empty()){
+        auto toSearch = qu.top();
+        qu.pop();
+
+        for (size_t i = 0; i < toSearch.node->entries.size(); ++i) {
+            double distance = toSearch.node->entries[i]->calculateDistance(queryPoint);
+
+            if (result.size() < k){
+                if (toSearch.node->isLeaf)
+                    result.insert(KnnSearchStruct(toSearch.node->entries[i]->childNodeId, distance));
+                else{
+                    auto childNode = cache.getNode(toSearch.node->entries[i]->childNodeId, treeFileStream, config);
+                    qu.push(KnnSearchStruct(childNode, distance));
+                }
+            }else if(distance < result.rbegin()->distance){ ///discards Nodes that are too far
+
+                if (toSearch.node->isLeaf){
+                    result.insert(KnnSearchStruct(toSearch.node->entries[i]->childNodeId, distance));
+                    result.erase(--result.end());
+                }else{
+                    auto childNode = cache.getNode(toSearch.node->entries[i]->childNodeId, treeFileStream, config);
+                    qu.push(KnnSearchStruct(childNode, distance));
+                }
+            }
+        }
+
     }
 }
 

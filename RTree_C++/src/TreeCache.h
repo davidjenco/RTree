@@ -10,7 +10,7 @@ private:
     size_t capacity;
 
 public:
-    explicit TreeCache() {
+    TreeCache() {
         capacity = 100;
         cache.assign(capacity, nullptr);
     }

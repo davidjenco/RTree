@@ -8,6 +8,7 @@
 #include "RecurseInsertStruct.h"
 #include "DataRow.h"
 #include "TreeCache.h"
+#include "KnnSearchStruct.h"
 
 ///RTree representation
 class RTree {
@@ -78,6 +79,9 @@ public:
     ///Searching tree into depth, if leaf node is hit, it collects all points in queried range, otherwise
     ///it recursively dive into nodes which intersects with queried range in every dimension
     void rangeSearchRec(std::set<uint32_t> & result, const std::shared_ptr<Node> & nodePtr, const std::vector<int32_t> & searchFrom, const std::vector<int32_t> & searchTo);
+
+    ///Searches tree for the k nearest neighbours of the given query point
+    void knnSearch(const std::vector<int32_t> & queryPoint, const size_t & k, std::set<KnnSearchStruct> & result);
 
     const TreeConfig &getConfig() const;
 

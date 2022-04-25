@@ -36,7 +36,7 @@ void Application::start() {
                 break;
             }
             case SEQUENCE_KNN_SEARCH:{
-                knnSearch();
+                knnSearch(SEQUENCE_KNN_SEARCH);
                 break;
             }
             case TREE_RANGE_SEARCH:{
@@ -44,7 +44,7 @@ void Application::start() {
                 break;
             }
             case TREE_KNN_SEARCH:{
-
+                knnSearch(TREE_KNN_SEARCH);
                 break;
             }
             case INSERT:{
@@ -115,7 +115,7 @@ void Application::insert() {
     cout << "Done" << endl;
 }
 
-void Application::knnSearch() {
+void Application::knnSearch(int action) {
     if (!checkExistingFile())
         return;
     tree.loadTree();
@@ -129,7 +129,13 @@ void Application::knnSearch() {
     if (!k)
         return;
 
-    printResult(doTheKnnSearch(queryPoint, k));
+    if (action == SEQUENCE_KNN_SEARCH)
+        printResult(doTheKnnSearch(queryPoint, k));
+    else{
+        set<KnnSearchStruct> result;
+        tree.knnSearch(queryPoint, k, result);
+        printResult(result);
+    }
 }
 
 set<uint32_t> Application::doTheRangeSearch(const vector<int32_t> &searchFrom, const vector<int32_t> &searchTo) {
@@ -212,7 +218,7 @@ void Application::printResult(const set<uint32_t> &result) {
 
 void Application::printResult(const set<KnnSearchStruct> &result) {
     for (auto & res : result) {
-        cout << res.id << " ";
+        cout << res.node->id << " ";
     }
     cout << endl;
 }
