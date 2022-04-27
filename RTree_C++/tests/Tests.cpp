@@ -7,6 +7,8 @@
 #include "../src/Node.h"
 #include "../src/RTree.h"
 #include "../src/CommandHandler.h"
+#include "../src/Splitter.h"
+
 
 using namespace std;
 
@@ -22,22 +24,35 @@ void testCandidate(){
 }
 
 void testDistributeEntriesOnHalves(){
-    vector<int> vec = {89, 15, 51, 27, 98};
+    vector<shared_ptr<RoutingEntry>> vec = {make_shared<RoutingEntry>(RoutingEntry(DataRow(89))),
+                                            make_shared<RoutingEntry>(RoutingEntry(DataRow(2))),
+                                            make_shared<RoutingEntry>(RoutingEntry(DataRow(9))),
+                                            make_shared<RoutingEntry>(RoutingEntry(DataRow(4))),
+                                            make_shared<RoutingEntry>(RoutingEntry(DataRow(39))),
+                                            make_shared<RoutingEntry>(RoutingEntry(DataRow(19))),
+                                            make_shared<RoutingEntry>(RoutingEntry(DataRow(6)))
 
-    random_device rd;
-    mt19937 rng(rd());
-    shuffle(vec.begin(), vec.end(), rng);
+    };
+    vector<shared_ptr<RoutingEntry>> half2;
 
-    size_t const half_size = vec.size() / 2;
-    vector<int> half1(vec.begin(), vec.begin() + half_size);
-    vector<int> half2(vec.begin() + half_size, vec.end());
-    cout << "half1: ";
-    for( auto & i : half1 )
-        cout << i << " ";
+//    Splitter::randomSplit(vec, half2);
+
+//    random_device rd;
+//    mt19937 rng(rd());
+//    shuffle(vec.begin(), vec.end(), rng);
+//
+//    size_t const half_size = vec.size() / 2;
+//
+//    half2.insert(half2.begin(), vec.begin() + half_size, vec.end());
+//    vec.erase(vec.begin() + half_size, vec.end());
+
+    cout << "vec: ";
+    for( auto & i : vec )
+        cout << i->childNodeId << " ";
     cout << endl;
     cout << "half2: ";
     for( auto & i : half2 )
-        cout << i << " ";
+        cout << i->childNodeId << " ";
     cout << endl;
 }
 
@@ -191,7 +206,18 @@ int main (int argc, char *argv[]){
 //    intervalIntersect();
 //    testInput();
 //    countLines();
-    testCalculations();
+//    testCalculations();
+//    testDistributeEntriesOnHalves();
+
+    vector<int> vec = {10, 11, 12};
+    vector<int> tmp = {20, 30};
+    vec.clear();
+
+    tmp.insert(tmp.begin(), vec.begin(), vec.end());
+
+    for(auto i : tmp)
+        cout << i << " ";
+    cout << endl;
 
     return 0;
 }

@@ -11,7 +11,7 @@ private:
 
 public:
     TreeCache() {
-        capacity = 100;
+        capacity = 100; //TODO 2MB / nodeSize
         cache.assign(capacity, nullptr);
     }
 

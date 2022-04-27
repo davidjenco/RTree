@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 #include "DataRow.h"
 #include "TreeConfig.h"
 
@@ -26,6 +27,8 @@ struct RoutingEntry{
 
     ///Calculates area of mbb
     double calculateArea() const;
+
+    double calculateAreaWithAnotherRoutingEntry(const std::shared_ptr<RoutingEntry> & anotherEntry);
 
     ///Checks whether routing entry ranges have to be enlarged depending on inserted point, if certain range needs to
     ///be enlarged in certain dimension it does enlarge (also returns true if one or more ranges enlarged, false otherwise)

@@ -6,6 +6,7 @@
 #include <queue>
 #include "RTree.h"
 #include "InsertCandidate.h"
+#include "Splitter.h"
 
 using namespace std;
 using namespace std::filesystem;
@@ -82,7 +83,7 @@ void RTree::insert(const DataRow & data) {
         newRoot.id = config.numberOfNodes++;
         newRoot.entries.emplace_back(initParams.createdEntrySurroundingNewNodeIfSplit);
         shared_ptr<RoutingEntry> newEntrySurroundingOldRoot = make_shared<RoutingEntry>();
-        rootNode.rewriteEntry(newEntrySurroundingOldRoot, config);
+        rootNode.rewriteEntry(newEntrySurroundingOldRoot);
         newRoot.entries.emplace_back(newEntrySurroundingOldRoot);
 
         treeFileStream.seekp(0, ios::end);
@@ -124,7 +125,7 @@ void RTree::insertRec(Node &node, const DataRow & data, RecurseInsertStruct & pa
             params.split = false;
             node.entries.emplace_back(params.createdEntrySurroundingNewNodeIfSplit);
         }
-        childNode.rewriteEntry(bestEntry, config); //enlarge bestEntry, params.enlarge stays true
+        childNode.rewriteEntry(bestEntry); //enlarge bestEntry, params.enlarge stays true
         node.rewriteNode(treeFileStream, config); //child note is rewritten surely - whether leaf or used to be parent
     }
     else if (params.enlarged){ //means I have to check my mbb
@@ -159,29 +160,26 @@ void RTree::addIntoLeafNode(Node &leafNode, const DataRow & data, RecurseInsertS
 
 void RTree::makeSplit(Node &fullNode, shared_ptr<RoutingEntry> &createdEntrySurroundingNewNode, const shared_ptr<RoutingEntry> &entryThatOverflowed) {
     //Create newNode and distribute entries between full and new node
-    Node newNode;
-    newNode.id = config.numberOfNodes++;
-    newNode.isLeaf = fullNode.isLeaf;
+    Node newNode1;
+    newNode1.id = fullNode.id;
+    newNode1.isLeaf = fullNode.isLeaf;
+    Node newNode2;
+    newNode2.id = config.numberOfNodes++;
+    newNode2.isLeaf = fullNode.isLeaf;
 
     fullNode.entries.emplace_back(entryThatOverflowed);
-    random_device rd;
-    mt19937 rng(rd());
-    shuffle(fullNode.entries.begin(), fullNode.entries.end(), rng);
 
-    size_t const half_size = fullNode.entries.size() / 2;
-    vector<shared_ptr<RoutingEntry>> half1 (fullNode.entries.begin(), fullNode.entries.begin() + half_size);
-    vector<shared_ptr<RoutingEntry>> half2 (fullNode.entries.begin() + half_size, fullNode.entries.end());
+    Splitter::makeQuadraticSplit(fullNode, newNode1, newNode2);
 
-    newNode.entries = half1;
-    fullNode.entries = half2;
+    fullNode = newNode1;
 
     //Serialize newNode
     treeFileStream.seekp(0, ios::end);
-    newNode.serializeNode(treeFileStream, config);
+    newNode2.serializeNode(treeFileStream, config);
 
     createdEntrySurroundingNewNode = make_shared<RoutingEntry>();
     //With this code createdEntrySurroundingNewNodeIfSplit variable is changed
-    newNode.rewriteEntry(createdEntrySurroundingNewNode, config);
+    newNode2.rewriteEntry(createdEntrySurroundingNewNode);
 }
 
 void RTree::initStreamsRecreateFile() {

@@ -61,7 +61,6 @@ double RoutingEntry::calculateDistance(const vector<int> & point) const{
 }
 
 double RoutingEntry::calculateArea() const{
-
     vector<double> sideLength;
     double result = 1;
     for (size_t i = 0; i < from.size(); ++i)
@@ -115,6 +114,20 @@ bool RoutingEntry::sortedIntervalsIntersect(const pair<int32_t, int32_t> & i1, c
     if(i2.second < i1.first)
         flag = false;
     return flag;
+}
+
+double RoutingEntry::calculateAreaWithAnotherRoutingEntry(const shared_ptr<RoutingEntry> & anotherEntry) {
+    RoutingEntry oneBigEntry;
+
+    for (size_t i = 0; i < from.size(); ++i) {
+        vector<int32_t> rangesForCertainDimension = {from[i], anotherEntry->from[i], to[i], anotherEntry->to[i]};
+        size_t minIndex = min_element(rangesForCertainDimension.begin(), rangesForCertainDimension.end()) - rangesForCertainDimension.begin();
+        size_t maxIndex = max_element(rangesForCertainDimension.begin(), rangesForCertainDimension.end()) - rangesForCertainDimension.begin();
+        oneBigEntry.from[i] = rangesForCertainDimension[minIndex];
+        oneBigEntry.to[i] = rangesForCertainDimension[maxIndex];
+    }
+
+    return oneBigEntry.calculateArea();
 }
 
 
