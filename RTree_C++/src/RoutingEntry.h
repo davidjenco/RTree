@@ -25,7 +25,7 @@ struct RoutingEntry{
     double calculateDistance(const std::vector<int> & point) const;
 
     ///Calculates area of mbb
-    size_t calculateArea() const;
+    double calculateArea() const;
 
     ///Checks whether routing entry ranges have to be enlarged depending on inserted point, if certain range needs to
     ///be enlarged in certain dimension it does enlarge (also returns true if one or more ranges enlarged, false otherwise)

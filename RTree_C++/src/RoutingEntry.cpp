@@ -54,16 +54,16 @@ double RoutingEntry::calculateDistance(const vector<int> & point) const{
         }
     }
 
-    int result = 0;
+    double result = 0;
     for(auto & i : minDistance)
         result += i * i;
     return sqrt(result);
 }
 
-size_t RoutingEntry::calculateArea() const{
+double RoutingEntry::calculateArea() const{
 
-    vector<size_t> sideLength;
-    size_t result = 1;
+    vector<double> sideLength;
+    double result = 1;
     for (size_t i = 0; i < from.size(); ++i)
         sideLength.emplace_back(abs(from[i] - to[i]));
     for(auto & i : sideLength)

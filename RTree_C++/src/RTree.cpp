@@ -43,7 +43,7 @@ uint32_t RTree::calculateNodeSize() const{
     uint32_t minSizeForEntriesInNode = config.minPossibleNodeSize - (uint32_t)sizeof(dummyNode.id) - (uint32_t)sizeof(dummyNode.isLeaf);
     uint32_t k = ceil(minSizeForEntriesInNode / l);
 
-    return k * (uint32_t) l + (uint32_t)sizeof(dummyNode.id) + (uint32_t)sizeof(dummyNode.isLeaf); //TODO proměnné
+    return k * (uint32_t) l + (uint32_t)sizeof(dummyNode.id) + (uint32_t)sizeof(dummyNode.isLeaf);
 }
 
 uint32_t RTree::calculateMaxNodeEntries() const{
@@ -257,7 +257,7 @@ void RTree::knnSearch(const vector<int32_t> &queryPoint, const size_t &k, set<Kn
 
         for (size_t i = 0; i < toSearch.node->entries.size(); ++i) {
             double distance = toSearch.node->entries[i]->calculateDistance(queryPoint);
-
+            ///Inserting first K-Points
             if (result.size() < k){
                 if (toSearch.node->isLeaf)
                     result.insert(KnnSearchStruct(toSearch.node->entries[i]->childNodeId, distance));
@@ -265,6 +265,7 @@ void RTree::knnSearch(const vector<int32_t> &queryPoint, const size_t &k, set<Kn
                     auto childNode = cache.getNode(toSearch.node->entries[i]->childNodeId, treeFileStream, config);
                     qu.push(KnnSearchStruct(childNode, distance));
                 }
+            ///Improving inserted K-points according to set max element (radius of search query)
             }else if(distance < result.rbegin()->distance){ ///discards Nodes that are too far
 
                 if (toSearch.node->isLeaf){

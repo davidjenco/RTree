@@ -4,9 +4,9 @@
 
 struct InsertCandidate {
     double distance;
-    size_t area;
+    double area;
 
-    InsertCandidate(double distance, const size_t &area) : distance(distance), area(area) {}
+    InsertCandidate(double distance, const double &area) : distance(distance), area(area) {}
 
     bool operator<(const InsertCandidate &rhs) const {
         if (distance < rhs.distance)
