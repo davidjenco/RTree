@@ -135,7 +135,11 @@ double Node::calculateAreaIncrease(shared_ptr<RoutingEntry> &entryToBeIncreasedW
     rewriteEntry(originalNodeSurroundingEntry);
 
     double originalArea = originalNodeSurroundingEntry->calculateArea();
-    double newArea = originalNodeSurroundingEntry->calculateAreaWithAnotherRoutingEntry(entryToBeIncreasedWith);
+    double newArea;
+//    if (isLeaf)
+//        newArea = originalNodeSurroundingEntry->calculateAreaWithAnotherPoint(entryToBeIncreasedWith);
+//    else
+        newArea = originalNodeSurroundingEntry->calculateAreaWithAnotherRoutingEntry(entryToBeIncreasedWith);
 
     return newArea - originalArea;
 }
