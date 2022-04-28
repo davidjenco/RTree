@@ -83,7 +83,7 @@ void RTree::insert(const DataRow & data) {
         newRoot.id = config.numberOfNodes++;
         newRoot.entries.emplace_back(initParams.createdEntrySurroundingNewNodeIfSplit);
         shared_ptr<RoutingEntry> newEntrySurroundingOldRoot = make_shared<RoutingEntry>();
-        rootNode.rewriteEntry(newEntrySurroundingOldRoot);
+        rootNode.rewriteEntry(newEntrySurroundingOldRoot, config);
         newRoot.entries.emplace_back(newEntrySurroundingOldRoot);
 
         treeFileStream.seekp(0, ios::end);
@@ -125,7 +125,7 @@ void RTree::insertRec(Node &node, const DataRow & data, RecurseInsertStruct & pa
             params.split = false;
             node.entries.emplace_back(params.createdEntrySurroundingNewNodeIfSplit);
         }
-        childNode.rewriteEntry(bestEntry); //enlarge bestEntry, params.enlarge stays true
+        childNode.rewriteEntry(bestEntry, config); //enlarge bestEntry, params.enlarge stays true
         node.rewriteNode(treeFileStream, config); //child note is rewritten surely - whether leaf or used to be parent
     }
     else if (params.enlarged){ //means I have to check my mbb
@@ -169,7 +169,7 @@ void RTree::makeSplit(Node &fullNode, shared_ptr<RoutingEntry> &createdEntrySurr
 
     fullNode.entries.emplace_back(entryThatOverflowed);
 
-    Splitter::randomSplit(fullNode, newNode1, newNode2);
+    Splitter::makeQuadraticSplit(fullNode, newNode1, newNode2, config);
 
     fullNode = newNode1;
 
@@ -179,7 +179,7 @@ void RTree::makeSplit(Node &fullNode, shared_ptr<RoutingEntry> &createdEntrySurr
 
     createdEntrySurroundingNewNode = make_shared<RoutingEntry>();
     //With this code createdEntrySurroundingNewNodeIfSplit variable is changed
-    newNode2.rewriteEntry(createdEntrySurroundingNewNode);
+    newNode2.rewriteEntry(createdEntrySurroundingNewNode, config);
 }
 
 void RTree::initStreamsRecreateFile() {

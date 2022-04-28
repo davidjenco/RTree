@@ -121,12 +121,12 @@ double RoutingEntry::calculateAreaWithAnotherRoutingEntry(const shared_ptr<Routi
 
     for (size_t i = 0; i < from.size(); ++i) {
         vector<int32_t> rangesForCertainDimension = {from[i], anotherEntry->from[i], to[i]};
-        if (anotherEntry->from.size() != anotherEntry->to.size())
+        if (anotherEntry->from.size() == anotherEntry->to.size())
             rangesForCertainDimension.push_back(anotherEntry->to[i]);
         size_t minIndex = min_element(rangesForCertainDimension.begin(), rangesForCertainDimension.end()) - rangesForCertainDimension.begin();
         size_t maxIndex = max_element(rangesForCertainDimension.begin(), rangesForCertainDimension.end()) - rangesForCertainDimension.begin();
-        oneBigEntry.from[i] = rangesForCertainDimension[minIndex];
-        oneBigEntry.to[i] = rangesForCertainDimension[maxIndex];
+        oneBigEntry.from.emplace_back(rangesForCertainDimension[minIndex]);
+        oneBigEntry.to.emplace_back(rangesForCertainDimension[maxIndex]);
     }
 
     return oneBigEntry.calculateArea();

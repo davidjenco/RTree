@@ -18,7 +18,7 @@ void Splitter::randomSplit(Node & fullNode, Node & node1, Node & node2) {
     node2.entries.insert(node2.entries.begin(), fullNode.entries.begin() + half_size, fullNode.entries.end());
 }
 
-void Splitter::makeQuadraticSplit(Node &fullNode, Node &node1, Node &node2) {
+void Splitter::makeQuadraticSplit(Node &fullNode, Node &node1, Node &node2, const TreeConfig & config) {
     size_t halfNumOfNodes = fullNode.entries.size() / 2;
     pair<size_t, size_t> seeds = quadraticPickSeeds(fullNode);
 
@@ -27,7 +27,7 @@ void Splitter::makeQuadraticSplit(Node &fullNode, Node &node1, Node &node2) {
     fullNode.entries.erase(fullNode.entries.begin() + seeds.first);
     fullNode.entries.erase(fullNode.entries.begin() + seeds.second);
 
-    quadraticDistribute(fullNode, node1, node2, halfNumOfNodes);
+    quadraticDistribute(fullNode, node1, node2, halfNumOfNodes, config);
 }
 
 pair<size_t, size_t> Splitter::quadraticPickSeeds(Node &fullNode) {
@@ -51,12 +51,12 @@ pair<size_t, size_t> Splitter::quadraticPickSeeds(Node &fullNode) {
     return seeds;
 }
 
-size_t Splitter::pickNext(Node &fullNode, Node &node1, Node &node2) {
+size_t Splitter::pickNext(Node &fullNode, Node &node1, Node &node2, const TreeConfig & config) {
     double maxAreaDifference = -1;
     size_t nextIndex;
     for (size_t i = 0; i < fullNode.entries.size(); ++i) {
-        double node1IncreaseByEntry = node1.calculateAreaIncrease(fullNode.entries[i]);
-        double node2IncreaseByEntry = node2.calculateAreaIncrease(fullNode.entries[i]);
+        double node1IncreaseByEntry = node1.calculateAreaIncrease(fullNode.entries[i], config);
+        double node2IncreaseByEntry = node2.calculateAreaIncrease(fullNode.entries[i], config);
         if (double res = abs(node1IncreaseByEntry - node2IncreaseByEntry); res > maxAreaDifference){
             maxAreaDifference = res;
             nextIndex = i;
@@ -65,56 +65,21 @@ size_t Splitter::pickNext(Node &fullNode, Node &node1, Node &node2) {
     return nextIndex;
 }
 
-void Splitter::quadraticDistribute(Node &fullNode, Node &node1, Node &node2, const size_t & halfNumOfNodes) {
+void Splitter::quadraticDistribute(Node &fullNode, Node &node1, Node &node2, const size_t & halfNumOfNodes, const TreeConfig & config) {
     while (!fullNode.entries.empty() && node1.entries.size() != halfNumOfNodes && node2.entries.size() != halfNumOfNodes){
-        size_t nextIndex = pickNext(fullNode, node1, node2);
+        size_t nextIndex = pickNext(fullNode, node1, node2, config);
         auto nextEntryToInsert = fullNode.entries[nextIndex];
-        double increasedAreaNode1 = node1.calculateAreaIncrease(nextEntryToInsert);
-        double increasedAreaNode2 = node2.calculateAreaIncrease(nextEntryToInsert);
+        double increasedAreaNode1 = node1.calculateAreaIncrease(nextEntryToInsert, config);
+        double increasedAreaNode2 = node2.calculateAreaIncrease(nextEntryToInsert, config);
         if (increasedAreaNode1 < increasedAreaNode2)
             node1.entries.emplace_back(nextEntryToInsert);
         else if (increasedAreaNode2 < increasedAreaNode1)
             node2.entries.emplace_back(nextEntryToInsert);
         else{
             shared_ptr<RoutingEntry> tmpMBB = make_shared<RoutingEntry>();
-            node1.rewriteEntry(tmpMBB);
+            node1.rewriteEntry(tmpMBB, config);
             double areaNode1 = tmpMBB->calculateArea();
-            node2.rewriteEntry(tmpMBB);
-            double areaNode2 = tmpMBB->calculateArea();
-
-            if (areaNode1 < areaNode2)
-                node1.entries.emplace_back(nextEntryToInsert);
-            else if (areaNode2 < areaNode1)
-                node2.entries.emplace_back(nextEntryToInsert);
-            else if (node1.entries.size() < node2.entries.size())
-                node1.entries.emplace_back(nextEntryToInsert);
-            else
-                node2.entries.emplace_back(nextEntryToInsert);
-        }
-        fullNode.entries.erase(fullNode.entries.begin() + nextIndex);
-    }
-
-    if (node1.entries.size() == halfNumOfNodes)
-        node2.entries.insert(node2.entries.begin(), fullNode.entries.begin(), fullNode.entries.end());
-    else
-        node1.entries.insert(node1.entries.begin(), fullNode.entries.begin(), fullNode.entries.end());
-}
-
-void Splitter::quadraticDistributeForLeaf(Node &fullNode, Node &node1, Node &node2, const size_t &halfNumOfNodes) {
-    while (!fullNode.entries.empty() && node1.entries.size() != halfNumOfNodes && node2.entries.size() != halfNumOfNodes){
-        size_t nextIndex = pickNext(fullNode, node1, node2);
-        auto nextEntryToInsert = fullNode.entries[nextIndex];
-        double increasedAreaNode1 = node1.calculateAreaIncrease(nextEntryToInsert);
-        double increasedAreaNode2 = node2.calculateAreaIncrease(nextEntryToInsert);
-        if (increasedAreaNode1 < increasedAreaNode2)
-            node1.entries.emplace_back(nextEntryToInsert);
-        else if (increasedAreaNode2 < increasedAreaNode1)
-            node2.entries.emplace_back(nextEntryToInsert);
-        else{
-            shared_ptr<RoutingEntry> tmpMBB = make_shared<RoutingEntry>();
-            node1.rewriteEntry(tmpMBB);
-            double areaNode1 = tmpMBB->calculateArea();
-            node2.rewriteEntry(tmpMBB);
+            node2.rewriteEntry(tmpMBB, config);
             double areaNode2 = tmpMBB->calculateArea();
 
             if (areaNode1 < areaNode2)
