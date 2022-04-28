@@ -169,7 +169,7 @@ void RTree::makeSplit(Node &fullNode, shared_ptr<RoutingEntry> &createdEntrySurr
 
     fullNode.entries.emplace_back(entryThatOverflowed);
 
-    Splitter::makeQuadraticSplit(fullNode, newNode1, newNode2, config);
+    Splitter::quadraticSplit(fullNode, newNode1, newNode2, config);
 
     fullNode = newNode1;
 

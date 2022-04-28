@@ -18,7 +18,7 @@ void Splitter::randomSplit(Node & fullNode, Node & node1, Node & node2) {
     node2.entries.insert(node2.entries.begin(), fullNode.entries.begin() + half_size, fullNode.entries.end());
 }
 
-void Splitter::makeQuadraticSplit(Node &fullNode, Node &node1, Node &node2, const TreeConfig & config) {
+void Splitter::quadraticSplit(Node &fullNode, Node &node1, Node &node2, const TreeConfig & config) {
     size_t halfNumOfNodes = fullNode.entries.size() / 2;
     pair<size_t, size_t> seeds = quadraticPickSeeds(fullNode);
 

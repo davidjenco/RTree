@@ -7,7 +7,7 @@
 class Splitter {
 
 public:
-    static void makeQuadraticSplit(Node & fullNode, Node & node1, Node & node2, const TreeConfig & config);
+    static void quadraticSplit(Node & fullNode, Node & node1, Node & node2, const TreeConfig & config);
 
     static void randomSplit(Node & fullNode, Node & node1, Node & node2);
 
