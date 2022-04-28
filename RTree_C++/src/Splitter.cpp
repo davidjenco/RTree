@@ -24,8 +24,8 @@ void Splitter::quadraticSplit(Node &fullNode, Node &node1, Node &node2, const Tr
 
     node1.entries.push_back(fullNode.entries[seeds.first]);
     node2.entries.push_back(fullNode.entries[seeds.second]);
-    fullNode.entries.erase(fullNode.entries.begin() + seeds.first);
     fullNode.entries.erase(fullNode.entries.begin() + seeds.second);
+    fullNode.entries.erase(fullNode.entries.begin() + seeds.first);
 
     quadraticDistribute(fullNode, node1, node2, halfNumOfNodes, config);
 }
