@@ -88,4 +88,6 @@ public:
     const Node &getRoot() const;
 
     std::fstream &getTreeFileStream();
+
+    void clearCache();
 };

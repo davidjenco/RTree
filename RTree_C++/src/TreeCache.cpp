@@ -1,3 +1,4 @@
+#include <iostream>
 #include "TreeCache.h"
 
 using namespace std;
@@ -20,4 +21,9 @@ shared_ptr<Node> TreeCache::getNode(const uint32_t &nodeId, fstream & treeFileSt
 void TreeCache::init(const TreeConfig &config) {
     capacity = cacheSize / config.nodeSizeInBytes;
     cache.resize(capacity, nullptr);
+    cache.shrink_to_fit();
+}
+
+void TreeCache::clearCache() {
+    cache.clear();
 }

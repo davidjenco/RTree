@@ -287,3 +287,7 @@ void RTree::saveConfig() {
     config.serialize(treeFileStream);
 }
 
+void RTree::clearCache() {
+    cache.clearCache();
+}
+

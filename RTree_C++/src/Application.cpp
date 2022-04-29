@@ -113,6 +113,7 @@ void Application::insert() {
     writePointToDataFile(dataRow);
     tree.saveConfig();
     cout << "Done" << endl;
+    tree.clearCache();
 }
 
 void Application::knnSearch(int action) {
