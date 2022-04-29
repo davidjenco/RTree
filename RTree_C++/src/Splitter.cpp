@@ -54,9 +54,17 @@ pair<size_t, size_t> Splitter::quadraticPickSeeds(Node &fullNode) {
 size_t Splitter::pickNext(Node &fullNode, Node &node1, Node &node2, const TreeConfig & config) {
     double maxAreaDifference = -1;
     size_t nextIndex;
+
+    shared_ptr<RoutingEntry> surroundingEntryNode1 = make_shared<RoutingEntry>();
+    shared_ptr<RoutingEntry> surroundingEntryNode2 = make_shared<RoutingEntry>();
+    node1.rewriteEntry(surroundingEntryNode1, config);
+    double areaNode1 = surroundingEntryNode1->calculateArea();
+    node2.rewriteEntry(surroundingEntryNode2, config);
+    double areaNode2 = surroundingEntryNode2->calculateArea();
+
     for (size_t i = 0; i < fullNode.entries.size(); ++i) {
-        double node1IncreaseByEntry = node1.calculateAreaIncrease(fullNode.entries[i], config);
-        double node2IncreaseByEntry = node2.calculateAreaIncrease(fullNode.entries[i], config);
+        double node1IncreaseByEntry = surroundingEntryNode1->calculateAreaWithAnotherRoutingEntry(fullNode.entries[i]) - areaNode1;
+        double node2IncreaseByEntry = surroundingEntryNode2->calculateAreaWithAnotherRoutingEntry(fullNode.entries[i]) - areaNode2;
         if (double res = abs(node1IncreaseByEntry - node2IncreaseByEntry); res > maxAreaDifference){
             maxAreaDifference = res;
             nextIndex = i;

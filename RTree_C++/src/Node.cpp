@@ -64,8 +64,11 @@ void Node::readNode(fstream &treeFileStream, Node &node, const TreeConfig & conf
 Node & Node::rewriteEntry(shared_ptr<RoutingEntry> &routingEntry, const TreeConfig & config) {
     routingEntry->from.clear();
     routingEntry->to.clear();
+//    routingEntry->from.resize(config.dimension);
+//    routingEntry->to.resize(config.dimension);
+    vector<int32_t> tmp;
     for (int i = 0; i < config.dimension; ++i) {
-        vector<int32_t> tmp;
+        tmp.clear();
         for (auto & entry : entries) {
             tmp.emplace_back(entry->from[i]);
             if (!isLeaf){
@@ -130,16 +133,12 @@ void Node::print(const TreeConfig &config) const{
 }
 
 double Node::calculateAreaIncrease(shared_ptr<RoutingEntry> &entryToBeIncreasedWith, const TreeConfig & config) {
-    RoutingEntry oneBigEntry;
     shared_ptr<RoutingEntry> originalNodeSurroundingEntry = make_shared<RoutingEntry>();
     rewriteEntry(originalNodeSurroundingEntry, config);
 
     double originalArea = originalNodeSurroundingEntry->calculateArea();
-    double newArea;
-//    if (isLeaf)
-//        newArea = originalNodeSurroundingEntry->calculateAreaWithAnotherPoint(entryToBeIncreasedWith);
-//    else
-        newArea = originalNodeSurroundingEntry->calculateAreaWithAnotherRoutingEntry(entryToBeIncreasedWith);
+    double newArea = originalNodeSurroundingEntry->calculateAreaWithAnotherRoutingEntry(entryToBeIncreasedWith);
 
     return newArea - originalArea;
+
 }
