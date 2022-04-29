@@ -118,9 +118,13 @@ bool RoutingEntry::sortedIntervalsIntersect(const pair<int32_t, int32_t> & i1, c
 
 double RoutingEntry::calculateAreaWithAnotherRoutingEntry(const shared_ptr<RoutingEntry> & anotherEntry) {
     RoutingEntry oneBigEntry;
+    oneBigEntry.from.reserve(from.size());
+    oneBigEntry.to.reserve(from.size());
 
+    vector<int32_t> rangesForCertainDimension;
     for (size_t i = 0; i < from.size(); ++i) {
-        vector<int32_t> rangesForCertainDimension = {from[i], anotherEntry->from[i], to[i]};
+        rangesForCertainDimension.clear();
+        rangesForCertainDimension = {from[i], anotherEntry->from[i], to[i]};
         if (anotherEntry->from.size() == anotherEntry->to.size())
             rangesForCertainDimension.push_back(anotherEntry->to[i]);
         size_t minIndex = min_element(rangesForCertainDimension.begin(), rangesForCertainDimension.end()) - rangesForCertainDimension.begin();

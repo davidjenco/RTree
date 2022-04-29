@@ -13,7 +13,8 @@ public:
 
     static std::pair<size_t, size_t> quadraticPickSeeds(Node & fullNode);
 
-    static size_t pickNext(Node & fullNode, Node & node1, Node & node2, const TreeConfig & config);
+    static size_t pickNext(Node & fullNode, std::shared_ptr<RoutingEntry> & surroundingNode1,
+                           std::shared_ptr<RoutingEntry> & surroundingNode2, const double areaNode1, const double areaNode2, const TreeConfig & config);
 
     static void quadraticDistribute(Node & fullNode, Node & node1, Node & node2, const size_t & halfNumOfNodes, const TreeConfig & config);
 

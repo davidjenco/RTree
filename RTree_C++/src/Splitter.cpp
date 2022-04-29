@@ -51,20 +51,14 @@ pair<size_t, size_t> Splitter::quadraticPickSeeds(Node &fullNode) {
     return seeds;
 }
 
-size_t Splitter::pickNext(Node &fullNode, Node &node1, Node &node2, const TreeConfig & config) {
+size_t Splitter::pickNext(Node &fullNode, shared_ptr<RoutingEntry> & surroundingNode1,
+                          shared_ptr<RoutingEntry> & surroundingNode2, const double areaNode1, const double areaNode2, const TreeConfig & config) {
     double maxAreaDifference = -1;
     size_t nextIndex;
 
-    shared_ptr<RoutingEntry> surroundingEntryNode1 = make_shared<RoutingEntry>();
-    shared_ptr<RoutingEntry> surroundingEntryNode2 = make_shared<RoutingEntry>();
-    node1.rewriteEntry(surroundingEntryNode1, config);
-    double areaNode1 = surroundingEntryNode1->calculateArea();
-    node2.rewriteEntry(surroundingEntryNode2, config);
-    double areaNode2 = surroundingEntryNode2->calculateArea();
-
     for (size_t i = 0; i < fullNode.entries.size(); ++i) {
-        double node1IncreaseByEntry = surroundingEntryNode1->calculateAreaWithAnotherRoutingEntry(fullNode.entries[i]) - areaNode1;
-        double node2IncreaseByEntry = surroundingEntryNode2->calculateAreaWithAnotherRoutingEntry(fullNode.entries[i]) - areaNode2;
+        double node1IncreaseByEntry = surroundingNode1->calculateAreaWithAnotherRoutingEntry(fullNode.entries[i]) - areaNode1;
+        double node2IncreaseByEntry = surroundingNode2->calculateAreaWithAnotherRoutingEntry(fullNode.entries[i]) - areaNode2;
         if (double res = abs(node1IncreaseByEntry - node2IncreaseByEntry); res > maxAreaDifference){
             maxAreaDifference = res;
             nextIndex = i;
@@ -74,11 +68,19 @@ size_t Splitter::pickNext(Node &fullNode, Node &node1, Node &node2, const TreeCo
 }
 
 void Splitter::quadraticDistribute(Node &fullNode, Node &node1, Node &node2, const size_t & halfNumOfNodes, const TreeConfig & config) {
+    shared_ptr<RoutingEntry> surroundingEntryNode1 = make_shared<RoutingEntry>();
+    shared_ptr<RoutingEntry> surroundingEntryNode2 = make_shared<RoutingEntry>();
+
     while (!fullNode.entries.empty() && node1.entries.size() != halfNumOfNodes && node2.entries.size() != halfNumOfNodes){
-        size_t nextIndex = pickNext(fullNode, node1, node2, config);
+        node1.rewriteEntry(surroundingEntryNode1, config);
+        double areaNode1 = surroundingEntryNode1->calculateArea();
+        node2.rewriteEntry(surroundingEntryNode2, config);
+        double areaNode2 = surroundingEntryNode2->calculateArea();
+
+        size_t nextIndex = pickNext(fullNode, surroundingEntryNode1, surroundingEntryNode2, areaNode1, areaNode2, config);
         auto nextEntryToInsert = fullNode.entries[nextIndex];
-        double increasedAreaNode1 = node1.calculateAreaIncrease(nextEntryToInsert, config);
-        double increasedAreaNode2 = node2.calculateAreaIncrease(nextEntryToInsert, config);
+        double increasedAreaNode1 = surroundingEntryNode1->calculateAreaWithAnotherRoutingEntry(fullNode.entries[nextIndex]) - areaNode1;
+        double increasedAreaNode2 = surroundingEntryNode2->calculateAreaWithAnotherRoutingEntry(fullNode.entries[nextIndex]) - areaNode2;
         if (increasedAreaNode1 < increasedAreaNode2)
             node1.entries.emplace_back(nextEntryToInsert);
         else if (increasedAreaNode2 < increasedAreaNode1)
