@@ -20,6 +20,7 @@ shared_ptr<Node> TreeCache::getNode(const uint32_t &nodeId, fstream & treeFileSt
 
 void TreeCache::init(const TreeConfig &config) {
     capacity = cacheSize / config.nodeSizeInBytes;
+//    capacity = 1;
     cache.resize(capacity, nullptr);
 }
 

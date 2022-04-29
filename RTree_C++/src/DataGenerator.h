@@ -9,7 +9,7 @@ private:
     uint32_t dimension;
     int min = -9999;
     int max = 9999;
-    int numberOfEntries = 200000;
+    int numberOfEntries = 20000;
     std::string dataFileName;
 
 public:

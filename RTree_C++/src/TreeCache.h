@@ -8,7 +8,7 @@ class TreeCache {
 private:
     std::vector<std::shared_ptr<Node>> cache;
     size_t capacity;
-    size_t cacheSize = 1e8; //0.1 GB
+    size_t cacheSize = 1e5; //0.1 MB
 
 public:
     TreeCache() = default;
