@@ -20,12 +20,14 @@ void RTree::configInit(uint32_t dimension) {
     config.numberOfNodes = 0;
     config.rootId = config.numberOfNodes++;
 
-    for (; config.maxNodeEntries < config.minNodeEntries ; config.minPossibleNodeSize += 104) { //TODO change if needed
+    for (; config.maxNodeEntries < config.minNodeEntries ; config.minPossibleNodeSize += 104) {
         config.nodeSizeInBytes = calculateNodeSize();
         config.maxNodeEntries = calculateMaxNodeEntries();
         config.maxLeafNodeEntries = calculateMaxLeafNodeEntries();
     }
     config.minPossibleNodeSize -= 104;
+
+    cache.init(config);
 }
 
 void RTree::serializeInit() {
@@ -217,6 +219,7 @@ void RTree::loadTree() {
 
     config.maxNodeEntries = calculateMaxNodeEntries();
     config.maxLeafNodeEntries = calculateMaxLeafNodeEntries();
+    cache.init(config);
 }
 
 std::set<uint32_t> RTree::rangeSearch(const vector<int32_t> &searchFrom, const vector<int32_t> &searchTo) {

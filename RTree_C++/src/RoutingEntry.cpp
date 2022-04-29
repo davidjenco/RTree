@@ -62,6 +62,7 @@ double RoutingEntry::calculateDistance(const vector<int> & point) const{
 
 double RoutingEntry::calculateArea() const{
     vector<double> sideLength;
+    sideLength.reserve(from.size());
     double result = 1;
     for (size_t i = 0; i < from.size(); ++i)
         sideLength.emplace_back(abs(from[i] - to[i]));

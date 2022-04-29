@@ -8,14 +8,14 @@ class TreeCache {
 private:
     std::vector<std::shared_ptr<Node>> cache;
     size_t capacity;
+    size_t cacheSize;
 
 public:
-    TreeCache() {
-        capacity = 100; //TODO cacheSize / nodeSize
-        cache.assign(capacity, nullptr);
-    }
+    TreeCache() = default;
 
     std::shared_ptr<Node> getNode(const uint32_t & nodeId, std::fstream & treeFileStream, const TreeConfig & config);
+
+    void init(const TreeConfig & config);
 };
 
 
