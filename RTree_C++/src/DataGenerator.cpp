@@ -30,7 +30,7 @@ void DataGenerator::generate(RTree &tree) {
 }
 
 //https://stackoverflow.com/questions/5008804/generating-random-integer-from-a-range
-int DataGenerator::getRandomInt() {
+int DataGenerator::getRandomInt() const {
     random_device rd;     // only used once to initialise (seed) engine
     mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
     uniform_int_distribution<int> uni(min,max); // guaranteed unbiased

@@ -23,7 +23,7 @@ public:
     ///Makes sequence range search in data file (for comparing to R-tree queries)
     std::set<uint32_t> doTheRangeSearch(const std::vector<int32_t> & searchFrom, const std::vector<int32_t> & searchTo);
 
-    std::set<KnnSearchStruct> doTheKnnSearch(const std::vector<int32_t> & queryPoint, const size_t & k);
+    void doTheKnnSearch(const std::vector<int32_t> & queryPoint, const size_t & k, std::set<KnnSearchStruct> & result);
 
     static bool containsPoint(const std::vector<int32_t> & row, const std::vector<int32_t> & searchFrom, const std::vector<int32_t> & searchTo);
 

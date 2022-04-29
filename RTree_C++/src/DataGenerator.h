@@ -7,7 +7,7 @@
 class DataGenerator {
 private:
     uint32_t dimension;
-    int min = -5299;
+    int min = -9999;
     int max = 9999;
     int numberOfEntries = 4000;
     std::string dataFileName;
@@ -21,7 +21,7 @@ public:
     void generate(RTree &tree);
 
     ///Generate random integer in specific range
-    int getRandomInt();
+    int getRandomInt() const;
 };
 
 

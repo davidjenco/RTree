@@ -3,12 +3,17 @@
 #include <fstream>
 #include <cassert>
 #include <random>
+#include <sstream>
 #include "../src/InsertCandidate.h"
 #include "../src/Node.h"
 #include "../src/RTree.h"
 #include "../src/CommandHandler.h"
 #include "../src/Splitter.h"
+#include "../src/DataGenerator.h"
+#include "../src/Application.h"
 
+
+#define DATA_PATH "../res/data.txt"
 
 using namespace std;
 
@@ -189,11 +194,138 @@ void testInput(){
 }
 
 void countLines(){
-    std::fstream inFile("../res/data.txt", ios::app);
+    std::fstream inFile(DATA_PATH, ios::app);
     cout << std::count(std::istreambuf_iterator<char>(inFile),
                std::istreambuf_iterator<char>(), '\n') << endl;
 }
 
+void doTheKnnSearch(const vector<int32_t> & queryPoint, const size_t & k, set<KnnSearchStruct> & result) {
+    ifstream dataInputFile (DATA_PATH);
+
+    string line;
+    while (getline(dataInputFile, line)){
+        istringstream iss (line);
+        uint32_t id;
+        iss >> id;
+        int32_t value;
+        vector<int32_t> row;
+        while (iss >> value){
+            row.emplace_back(value);
+        }
+
+        double distance = RoutingEntry (DataRow(row, id)).calculateDistance(queryPoint);
+        if (result.size() < k)
+            result.insert(KnnSearchStruct(id, distance));
+        else if (distance < result.rbegin()->distance){
+            result.insert(KnnSearchStruct(id, distance));
+            result.erase(--result.end());
+        }
+    }
+
+    if (dataInputFile.fail() && !dataInputFile.eof()){
+        dataInputFile.close();
+        throw runtime_error("Error while reading the data file");
+    }
+    dataInputFile.close();
+}
+
+set<uint32_t> doTheRangeSearch(const vector<int32_t> &searchFrom, const vector<int32_t> &searchTo) {
+    ifstream dataInputFile (DATA_PATH);
+    set<uint32_t> results;
+
+    string line;
+    while (getline(dataInputFile, line)){
+        istringstream iss (line);
+        uint32_t id;
+        iss >> id;
+        int32_t value;
+        vector<int32_t> row;
+        while (iss >> value){
+            row.emplace_back(value);
+        }
+
+        if (Application::containsPoint(row, searchFrom, searchTo))
+            results.insert(id);
+//            printf("Searching %d in (%d-%d) and searching %d in (%d-%d)\n", row[0], searchFrom[0], searchTo[0], row[1], searchFrom[1], searchTo[1]);
+    }
+
+    if (dataInputFile.fail() && !dataInputFile.eof()){
+        dataInputFile.close();
+        throw runtime_error("Error while reading the data file");
+    }
+    dataInputFile.close();
+    return results;
+}
+
+void generate(RTree & tree, DataGenerator & generator, int dimension){
+    tree.closeStreams();
+
+    tree = RTree();
+    tree.configInit(dimension);
+    tree.initStreamsRecreateFile();
+    tree.serializeInit();
+
+
+    generator.generate(tree);
+
+    tree.saveConfig();
+}
+
+bool testOneKnn(RTree & tree, DataGenerator & generator, int dimension){
+    vector<int32_t> point;
+    point.reserve(dimension);
+
+    for (int i = 0; i < dimension; ++i) {
+        point.emplace_back(generator.getRandomInt());
+    }
+
+    set<uint32_t> resultIdSet1;
+    set<uint32_t> resultIdSet2;
+    set<KnnSearchStruct> result1;
+    set<KnnSearchStruct> result2;
+    tree.knnSearch(point, 20, result1);
+    doTheKnnSearch(point, 20, result2);
+
+    double max = result1.rbegin()->distance;
+    set<KnnSearchStruct>::reverse_iterator it;
+    for(it = result1.rbegin(); it != result1.rend(); ++it){
+        if(max != it->distance)
+            resultIdSet1.insert(it->node->id);
+    }
+
+    for(it = result2.rbegin(); it != result2.rend(); ++it){
+        if(max != it->distance)
+            resultIdSet2.insert(it->node->id);
+    }
+
+    return resultIdSet1 == resultIdSet2; //TODO kdyžtak upravit
+}
+
+void testOneSearch(RTree & tree, int dimension){
+    vector<int32_t> from, to;
+    DataGenerator generator(dimension, DATA_PATH);
+    generate(tree, generator, dimension);
+
+    for (int j = 0; j < 10; ++j) {
+        from.clear();
+        to.clear();
+        for (int i = 0; i < dimension; ++i) {
+            from.emplace_back(generator.getRandomInt());
+            to.emplace_back(generator.getRandomInt());
+        }
+        assert(tree.rangeSearch(from, to) == doTheRangeSearch(from, to));
+        assert(testOneKnn(tree, generator, dimension));
+    }
+}
+
+void searchTest(){
+    RTree tree;
+
+    //iterates through different dimensions
+    for (int dimension = 1; dimension <= 10; ++dimension) {
+        testOneSearch(tree, dimension);
+    }
+}
 
 int main (int argc, char *argv[]){
 //    testCandidate();
@@ -209,15 +341,8 @@ int main (int argc, char *argv[]){
 //    testCalculations();
 //    testDistributeEntriesOnHalves();
 
-    vector<int> vec = {10, 11, 12};
-    vector<int> tmp = {20, 30};
-    vec.clear();
 
-    tmp.insert(tmp.begin(), vec.begin(), vec.end());
-
-    for(auto i : tmp)
-        cout << i << " ";
-    cout << endl;
+    searchTest();
 
     return 0;
 }

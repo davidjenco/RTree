@@ -129,10 +129,12 @@ void Application::knnSearch(int action) {
     if (!k)
         return;
 
-    if (action == SEQUENCE_KNN_SEARCH)
-        printResult(doTheKnnSearch(queryPoint, k));
+    set<KnnSearchStruct> result;
+    if (action == SEQUENCE_KNN_SEARCH){
+        doTheKnnSearch(queryPoint, k, result);
+        printResult(result);
+    }
     else{
-        set<KnnSearchStruct> result;
         tree.knnSearch(queryPoint, k, result);
         printResult(result);
     }
@@ -166,9 +168,8 @@ set<uint32_t> Application::doTheRangeSearch(const vector<int32_t> &searchFrom, c
     return results;
 }
 
-std::set<KnnSearchStruct> Application::doTheKnnSearch(const vector<int32_t> & queryPoint, const size_t & k) {
+void Application::doTheKnnSearch(const vector<int32_t> & queryPoint, const size_t & k, set<KnnSearchStruct> & result) {
     ifstream dataInputFile (dataFileName);
-    set<KnnSearchStruct> result;
 
     string line;
     while (getline(dataInputFile, line)){
@@ -195,7 +196,6 @@ std::set<KnnSearchStruct> Application::doTheKnnSearch(const vector<int32_t> & qu
         throw runtime_error("Error while reading the data file");
     }
     dataInputFile.close();
-    return result;
 }
 
 bool Application::containsPoint(const vector<int32_t> &row, const vector<int32_t> &searchFrom,

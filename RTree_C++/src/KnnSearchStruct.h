@@ -8,8 +8,8 @@
 ///set just (node) id is interesting for us, but for pushing into priority queue also ptr of Node is important, so struct
 ///is more general to satisfy both needs
 struct KnnSearchStruct{
-    std::shared_ptr<Node> node;
     double distance;
+    std::shared_ptr<Node> node;
 
     KnnSearchStruct() = default;
 
@@ -21,7 +21,11 @@ struct KnnSearchStruct{
     }
 
     bool operator<(const KnnSearchStruct &rhs) const {
-        return distance < rhs.distance;
+        if (distance < rhs.distance)
+            return true;
+        if (rhs.distance < distance)
+            return false;
+        return node->id < rhs.node->id;
     }
 
     bool operator>(const KnnSearchStruct &rhs) const {
@@ -35,4 +39,5 @@ struct KnnSearchStruct{
     bool operator>=(const KnnSearchStruct &rhs) const {
         return !(*this < rhs);
     }
+
 };
