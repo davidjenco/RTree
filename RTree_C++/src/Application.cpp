@@ -21,11 +21,6 @@ void Application::start() {
         getline(cin, input);
         if (input.empty())
             continue;
-        if (input == "q"){
-            tree.closeStreams();
-            break;
-        }
-
         switch (commandHandler.getAction(input)) {
             case GENERATE:{
                 generate();
@@ -54,6 +49,10 @@ void Application::start() {
             case HELP:{
                 commandHandler.printHelpTable();
                 break;
+            }
+            case QUIT:{
+                tree.closeStreams();
+                return;
             }
             default:{
                 continue;

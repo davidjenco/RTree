@@ -5,12 +5,13 @@ using namespace std;
 
 CommandHandler::CommandHandler() {
     commands["generate"] = GENERATE;
-    commands["search sequence range"] = SEQUENCE_RANGE_SEARCH;
-    commands["search sequence knn"] = SEQUENCE_KNN_SEARCH;
+    commands["search range -s"] = SEQUENCE_RANGE_SEARCH;
+    commands["search knn -s"] = SEQUENCE_KNN_SEARCH;
     commands["search range"] = TREE_RANGE_SEARCH;
     commands["search knn"] = TREE_KNN_SEARCH;
     commands["insert"] = INSERT;
     commands["help"] = HELP;
+    commands["quit"] = QUIT;
 }
 
 int CommandHandler::getAction(const string & cmd) {
