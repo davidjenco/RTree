@@ -279,26 +279,16 @@ bool testOneKnn(RTree & tree, DataGenerator & generator, int dimension){
         point.emplace_back(generator.getRandomInt());
     }
 
-    set<uint32_t> resultIdSet1;
-    set<uint32_t> resultIdSet2;
     set<KnnSearchStruct> result1;
     set<KnnSearchStruct> result2;
     tree.knnSearch(point, 20, result1);
     doTheKnnSearch(point, 20, result2);
 
     double max = result1.rbegin()->distance;
-    set<KnnSearchStruct>::reverse_iterator it;
-    for(it = result1.rbegin(); it != result1.rend(); ++it){
-        if(max != it->distance)
-            resultIdSet1.insert(it->node->id);
-    }
+    result1.erase(result1.lower_bound(KnnSearchStruct(0, max)), result1.end());
+    result2.erase(result2.lower_bound(KnnSearchStruct(0, max)), result2.end());
 
-    for(it = result2.rbegin(); it != result2.rend(); ++it){
-        if(max != it->distance)
-            resultIdSet2.insert(it->node->id);
-    }
-
-    return resultIdSet1 == resultIdSet2; //TODO kdyžtak upravit
+    return result1 == result2;
 }
 
 void testOneSearch(RTree & tree, int dimension){

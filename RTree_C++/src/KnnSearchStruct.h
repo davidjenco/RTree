@@ -40,4 +40,8 @@ struct KnnSearchStruct{
         return !(*this < rhs);
     }
 
+    bool operator==(const KnnSearchStruct &rhs) const {
+        return (*this <= rhs) && (*this >= rhs);
+    }
+
 };
