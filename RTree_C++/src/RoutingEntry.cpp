@@ -34,6 +34,7 @@ void RoutingEntry::readEntry(fstream &treeFileStream, RoutingEntry &routingEntry
 double RoutingEntry::calculateDistance(const vector<int> & point) const{
 
     vector<int> minDistance;
+    minDistance.reserve(from.size());
     if (from.size() == to.size()){
         for (size_t i = 0; i < from.size(); ++i) {
             int start = from[i];

@@ -99,40 +99,58 @@ void generate(RTree & tree, DataGenerator & generator, int dimension){
 
 int main(){
     RTree tree;
+    Timer clock;
 //    DataGenerator generator (1, DATA_PATH);
 //    tree.initStreamsExistingFile();
 //    tree.loadTree();
 
     vector<int32_t> searchFrom;
     vector<int32_t> searchTo;
-//    set<KnnSearchStruct> knnResult;
-//    vector<int32_t> point;
+    set<KnnSearchStruct> knnResult;
+    int numberOfQueries = 100; //TODO napsat do popisu
+    double searchRangeTime, sequenceRangeTime, searchKnnTime, sequenceKnnTime;
 
-    for (int d = 1; d <= 17; ++d) {
+    for (int d = 14; d <= 14; ++d) {
         DataGenerator generator (d, DATA_PATH);
         generate(tree, generator, d);
-        double totalTime = 0;
-        for (int i = 0; i < 5000; ++i) {
+        searchRangeTime = sequenceRangeTime = searchKnnTime = sequenceKnnTime = 0;
+        for (int i = 0; i < numberOfQueries; ++i) {
             searchFrom.clear();
             searchTo.clear();
             for (int j = 0; j < d; ++j) {
-                searchFrom.emplace_back(getRandomInt(3000, 6000));
-                searchTo.emplace_back(getRandomInt(-6000, -3000));
+                searchFrom.emplace_back(getRandomInt(15000, 30000)); //TODO napsat do popisu
+                searchTo.emplace_back(getRandomInt(-30000, -15000));
             }
-            //Timer clock;
-            //clock.tick();
-            auto start = chrono::high_resolution_clock::now();
+            clock.tick();
             tree.rangeSearch(searchFrom, searchTo);
-//    doTheRangeSearch(searchFrom, searchTo);
-//    tree.knnSearch(point, 20, knnResult);
-//    doTheKnnSearch(point, 20, knnResult);
-            //clock.tock();
-            auto end = chrono::high_resolution_clock::now();
-            auto tmp = (double) chrono::duration_cast<chrono::nanoseconds>(end - start).count() * 1e-6;
-            totalTime += tmp;
+            clock.tock();
+            searchRangeTime += (double)clock.duration().count() * 1e-6;
+
+            clock.tick();
+            doTheRangeSearch(searchFrom, searchTo);
+            clock.tock();
+            sequenceRangeTime += (double)clock.duration().count() * 1e-6;
+
+            clock.tick();
+            tree.knnSearch(searchFrom, 20, knnResult);
+            clock.tock();
+            searchKnnTime += (double)clock.duration().count() * 1e-6;
+
+            clock.tick();
+            doTheKnnSearch(searchFrom, 20, knnResult);
+            clock.tock();
+            sequenceKnnTime += (double)clock.duration().count() * 1e-6;
         }
-        totalTime /= 5000;
-        cout << setw(2) << d << ": "<< totalTime << " ms\n";
+        searchRangeTime /= numberOfQueries;
+        sequenceRangeTime /= numberOfQueries;
+        searchKnnTime /= numberOfQueries;
+        sequenceKnnTime /= numberOfQueries;
+        printf("%2d: %g %g | %g %g\n", d, searchRangeTime, sequenceRangeTime, searchKnnTime, sequenceKnnTime);
+        //cout << setw(2) << d << ": " << searchRangeTime << "  " << " ms\n";
     }
     return 0;
 }
+
+//auto start = chrono::high_resolution_clock::now();
+//auto end = chrono::high_resolution_clock::now();
+//auto tmp = (double) chrono::duration_cast<chrono::nanoseconds>(end - start).count() * 1e-6;

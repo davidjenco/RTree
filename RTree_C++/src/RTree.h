@@ -17,6 +17,7 @@ private:
     TreeConfig config;
     std::fstream treeFileStream;
     TreeCache cache;
+    size_t searchedNodesCounter = 0;
 
 
 public:

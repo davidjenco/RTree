@@ -3,8 +3,8 @@
 #include <chrono>
 #include <assert.h>
 
-template <class DT = std::chrono::milliseconds,
-        class ClockT = std::chrono::steady_clock>
+template <class DT = std::chrono::nanoseconds,
+        class ClockT = std::chrono::high_resolution_clock>
 class Timer
 {
     using timep_t = typename ClockT::time_point;
