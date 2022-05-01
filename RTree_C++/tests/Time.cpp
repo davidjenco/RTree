@@ -28,14 +28,16 @@ int getRandomInt(int from, int to) {
 set<uint32_t> doTheRangeSearch(const vector<int32_t> &searchFrom, const vector<int32_t> &searchTo) {
     ifstream dataInputFile (DATA_PATH);
     set<uint32_t> results;
+    vector<int32_t> row;
+    row.reserve(searchFrom.size()); //TODO kdyžtak dát i do Application
 
     string line;
     while (getline(dataInputFile, line)){
         istringstream iss (line);
         uint32_t id;
         iss >> id;
+        row.clear();
         int32_t value;
-        vector<int32_t> row;
         while (iss >> value){
             row.emplace_back(value);
         }
@@ -55,14 +57,16 @@ set<uint32_t> doTheRangeSearch(const vector<int32_t> &searchFrom, const vector<i
 
 void doTheKnnSearch(const vector<int32_t> & queryPoint, const size_t & k, set<KnnSearchStruct> & result) {
     ifstream dataInputFile (DATA_PATH);
+    vector<int32_t> row;
+    row.reserve(queryPoint.size()); //TODO kdyžtak dát i do Application
 
     string line;
     while (getline(dataInputFile, line)){
         istringstream iss (line);
         uint32_t id;
         iss >> id;
+        row.clear();
         int32_t value;
-        vector<int32_t> row;
         while (iss >> value){
             row.emplace_back(value);
         }
@@ -100,54 +104,39 @@ void generate(RTree & tree, DataGenerator & generator, int dimension){
 int main(){
     RTree tree;
     Timer clock;
-//    DataGenerator generator (1, DATA_PATH);
-//    tree.initStreamsExistingFile();
-//    tree.loadTree();
 
     vector<int32_t> searchFrom;
     vector<int32_t> searchTo;
-    set<KnnSearchStruct> knnResult;
-    int numberOfQueries = 100; //TODO napsat do popisu
-    double searchRangeTime, sequenceRangeTime, searchKnnTime, sequenceKnnTime;
+    set<KnnSearchStruct> result;
+    int numberOfQueries = 1000; //TODO napsat do popisu
+    double searchRangeTime;
+    int dimension = 3;
 
-    for (int d = 14; d <= 14; ++d) {
-        DataGenerator generator (d, DATA_PATH);
-        generate(tree, generator, d);
-        searchRangeTime = sequenceRangeTime = searchKnnTime = sequenceKnnTime = 0;
+    for (uint32_t entriesInNode = 10; entriesInNode <= 100; entriesInNode+=10) {
+        DataGenerator generator (dimension, DATA_PATH);
+        tree.config.minNodeEntries = entriesInNode;
+
+        searchRangeTime = 0;
+        generate(tree, generator, dimension);
+
         for (int i = 0; i < numberOfQueries; ++i) {
             searchFrom.clear();
             searchTo.clear();
-            for (int j = 0; j < d; ++j) {
-                searchFrom.emplace_back(getRandomInt(15000, 30000)); //TODO napsat do popisu
-                searchTo.emplace_back(getRandomInt(-30000, -15000));
+            for (int j = 0; j < dimension; ++j) {
+                searchFrom.emplace_back(getRandomInt(-7000, -3000));
+                searchTo.emplace_back(getRandomInt(3000, 7000));
             }
             clock.tick();
             tree.rangeSearch(searchFrom, searchTo);
             clock.tock();
             searchRangeTime += (double)clock.duration().count() * 1e-6;
 
-            clock.tick();
-            doTheRangeSearch(searchFrom, searchTo);
-            clock.tock();
-            sequenceRangeTime += (double)clock.duration().count() * 1e-6;
-
-            clock.tick();
-            tree.knnSearch(searchFrom, 20, knnResult);
-            clock.tock();
-            searchKnnTime += (double)clock.duration().count() * 1e-6;
-
-            clock.tick();
-            doTheKnnSearch(searchFrom, 20, knnResult);
-            clock.tock();
-            sequenceKnnTime += (double)clock.duration().count() * 1e-6;
         }
         searchRangeTime /= numberOfQueries;
-        sequenceRangeTime /= numberOfQueries;
-        searchKnnTime /= numberOfQueries;
-        sequenceKnnTime /= numberOfQueries;
-        printf("%2d: %g %g | %g %g\n", d, searchRangeTime, sequenceRangeTime, searchKnnTime, sequenceKnnTime);
-        //cout << setw(2) << d << ": " << searchRangeTime << "  " << " ms\n";
+        cout << entriesInNode << ": " << searchRangeTime << endl;
     }
+
+
     return 0;
 }
 

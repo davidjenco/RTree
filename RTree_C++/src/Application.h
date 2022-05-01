@@ -11,7 +11,7 @@
 class Application {
 private:
     CommandHandler commandHandler;
-    std::string dataFileName = "../res/data.txt"; //careful on file placement --> relative path depends on binary path (now in cmake-build-debug)
+    std::string dataFileName = "res/data.txt"; //careful on file placement --> relative path depends on binary path (now in cmake-build-debug)
     RTree tree;
 
 public:

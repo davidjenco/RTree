@@ -81,6 +81,7 @@ void Splitter::quadraticDistribute(Node &fullNode, Node &node1, Node &node2, con
         auto nextEntryToInsert = fullNode.entries[nextIndex];
         double increasedAreaNode1 = surroundingEntryNode1->calculateAreaWithAnotherRoutingEntry(fullNode.entries[nextIndex]) - areaNode1;
         double increasedAreaNode2 = surroundingEntryNode2->calculateAreaWithAnotherRoutingEntry(fullNode.entries[nextIndex]) - areaNode2;
+        ///now inserting itself
         if (increasedAreaNode1 < increasedAreaNode2)
             node1.entries.emplace_back(nextEntryToInsert);
         else if (increasedAreaNode2 < increasedAreaNode1)

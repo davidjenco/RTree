@@ -3,6 +3,7 @@
 #include <chrono>
 #include <assert.h>
 
+//https://stackoverflow.com/questions/2808398/easily-measure-elapsed-time
 template <class DT = std::chrono::nanoseconds,
         class ClockT = std::chrono::high_resolution_clock>
 class Timer

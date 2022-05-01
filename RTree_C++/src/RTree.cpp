@@ -38,11 +38,11 @@ void RTree::serializeInit() {
 uint32_t RTree::calculateNodeSize() const{
     Node dummyNode;
 
-    uint32_t leafRoutingEntrySizeInSetDimension, noLeafRoutingEntrySizeInSetDimension;
-    leafRoutingEntrySizeInSetDimension =  (config.dimension * sizeof(int32_t)) + sizeof(uint32_t);
-    noLeafRoutingEntrySizeInSetDimension = 2 * (config.dimension * sizeof(int32_t)) + sizeof(uint32_t);
+    uint32_t leafRoutingEntrySizeInCurrentDimension, noLeafRoutingEntrySizeInCurrentDimension;
+    leafRoutingEntrySizeInCurrentDimension = (config.dimension * sizeof(int32_t)) + sizeof(uint32_t);
+    noLeafRoutingEntrySizeInCurrentDimension = 2 * (config.dimension * sizeof(int32_t)) + sizeof(uint32_t);
 
-    double l = lcm(leafRoutingEntrySizeInSetDimension, noLeafRoutingEntrySizeInSetDimension);
+    double l = lcm(leafRoutingEntrySizeInCurrentDimension, noLeafRoutingEntrySizeInCurrentDimension);
     uint32_t minSizeForEntriesInNode = config.minPossibleNodeSize - (uint32_t)sizeof(dummyNode.id) - (uint32_t)sizeof(dummyNode.isLeaf);
     uint32_t k = ceil(minSizeForEntriesInNode / l);
 
@@ -172,6 +172,7 @@ void RTree::makeSplit(Node &fullNode, shared_ptr<RoutingEntry> &createdEntrySurr
     fullNode.entries.emplace_back(entryThatOverflowed);
 
     Splitter::quadraticSplit(fullNode, newNode1, newNode2, config);
+//    Splitter::randomSplit(fullNode, newNode1, newNode2);
 
     fullNode = newNode1;
 
@@ -209,10 +210,6 @@ const Node &RTree::getRoot() const {
     return root;
 }
 
-fstream &RTree::getTreeFileStream(){
-    return treeFileStream;
-}
-
 void RTree::loadTree() {
     treeFileStream.seekg(0, ios::beg);
     config.readConfig(treeFileStream);
@@ -224,7 +221,7 @@ void RTree::loadTree() {
 
 std::set<uint32_t> RTree::rangeSearch(const vector<int32_t> &searchFrom, const vector<int32_t> &searchTo) {
     set<uint32_t> result;
-
+    searchedNodesCounter = 0;
     shared_ptr<Node> rootNodePtr = cache.getNode(config.rootId, treeFileStream, config);
     rangeSearchRec(result, rootNodePtr, searchFrom, searchTo);
 
@@ -233,6 +230,7 @@ std::set<uint32_t> RTree::rangeSearch(const vector<int32_t> &searchFrom, const v
 
 void RTree::rangeSearchRec(set<uint32_t> &result, const shared_ptr<Node> & nodePtr, const vector<int32_t> &searchFrom,
                            const vector<int32_t> &searchTo) {
+    ++searchedNodesCounter;
     if(nodePtr->isLeaf){
         nodePtr->collectPoints(result, searchFrom, searchTo);
         return;
@@ -290,4 +288,3 @@ void RTree::saveConfig() {
 void RTree::clearCache() {
     cache.clearCache();
 }
-

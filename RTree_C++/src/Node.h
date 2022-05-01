@@ -37,6 +37,7 @@ struct Node{
     ///range from query)
     void collectPoints(std::set<uint32_t> & result, const std::vector<int32_t> & searchFrom, const std::vector<int32_t> & searchTo) const;
 
+    ///Not used anymore
     double calculateAreaIncrease(std::shared_ptr<RoutingEntry> & entryToBeIncreasedWith, const TreeConfig & config);
 
     void print(const TreeConfig & config) const;

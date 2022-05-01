@@ -19,7 +19,8 @@ void RoutingEntry::serializeEntry(fstream &treeFileStream, bool inLeafNode) {
 void RoutingEntry::readEntry(fstream &treeFileStream, RoutingEntry &routingEntry, bool inLeafNode, const TreeConfig & config) {
     treeFileStream.read((char *) & routingEntry.childNodeId, sizeof(routingEntry.childNodeId));
 
-
+    routingEntry.from.reserve(config.dimension);
+    routingEntry.to.reserve(config.dimension);
     int32_t range;
     for (size_t i = 0; i < config.dimension; ++i) {
         treeFileStream.read((char *) & range, sizeof(range));

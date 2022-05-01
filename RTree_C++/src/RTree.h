@@ -14,9 +14,9 @@
 class RTree {
 private:
     Node root;
-    TreeConfig config;
     std::fstream treeFileStream;
     TreeCache cache;
+    TreeConfig config;
     size_t searchedNodesCounter = 0;
 
 
@@ -84,11 +84,10 @@ public:
     ///Searches tree for the k nearest neighbours of the given query point
     void knnSearch(const std::vector<int32_t> & queryPoint, const size_t & k, std::set<KnnSearchStruct> & result);
 
+    ///Clears cache
+    void clearCache();
+
     const TreeConfig &getConfig() const;
 
     const Node &getRoot() const;
-
-    std::fstream &getTreeFileStream();
-
-    void clearCache();
 };

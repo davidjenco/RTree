@@ -28,6 +28,7 @@ struct RoutingEntry{
     ///Calculates area of mbb
     double calculateArea() const;
 
+    ///Calculates changed area, when another entry (routing or ground) would be inserted into this entry
     double calculateAreaWithAnotherRoutingEntry(const std::shared_ptr<RoutingEntry> & anotherEntry);
 
     ///Checks whether routing entry ranges have to be enlarged depending on inserted point, if certain range needs to

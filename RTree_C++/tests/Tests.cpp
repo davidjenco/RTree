@@ -296,12 +296,20 @@ void testOneSearch(RTree & tree, int dimension){
     DataGenerator generator(dimension, DATA_PATH);
     generate(tree, generator, dimension);
 
-    for (int j = 0; j < 10; ++j) {
+    for (int j = 0; j < 1000; ++j) {
         from.clear();
         to.clear();
         for (int i = 0; i < dimension; ++i) {
-            from.emplace_back(generator.getRandomInt());
-            to.emplace_back(generator.getRandomInt());
+            int32_t lo, hi;
+            lo = generator.getRandomInt();
+            hi = generator.getRandomInt();
+            if (lo <= hi){
+                from.emplace_back(lo);
+                to.emplace_back(hi);
+            }else{
+                from.emplace_back(hi);
+                to.emplace_back(lo);
+            }
         }
         assert(tree.rangeSearch(from, to) == doTheRangeSearch(from, to));
         assert(testOneKnn(tree, generator, dimension));
@@ -333,6 +341,6 @@ int main (int argc, char *argv[]){
 
 
     searchTest();
-
+//    nodesCounter();
     return 0;
 }

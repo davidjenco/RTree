@@ -7,8 +7,8 @@
 class DataGenerator {
 private:
     uint32_t dimension;
-    int min = -50000;
-    int max = 50000;
+    int min = -10000;
+    int max = 10000;
     int numberOfEntries = 20000;
     std::string dataFileName;
 
