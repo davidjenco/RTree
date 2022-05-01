@@ -1,4 +1,4 @@
-CXXFLAGS=-Wall -pedantic -std=c++2a -g
+CXXFLAGS=-std=c++2a -O
 
 HEADERS = $(wildcard src/*.h)
 SOURCES = $(wildcard src/*.cpp)

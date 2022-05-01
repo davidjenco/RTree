@@ -166,8 +166,8 @@ void RTree::makeSplit(Node &fullNode, shared_ptr<RoutingEntry> &createdEntrySurr
 }
 
 void RTree::initStreamsRecreateFile() {
-    if (!exists("../res")){
-        create_directories("../res");
+    if (!exists("res")){
+        create_directories("res");
     }
 
     treeFileStream.open(config.treeFileName, ios::in | ios::out | ios::binary | ios::trunc);
