@@ -244,7 +244,7 @@ size_t Application::countLinesInDataFile() {
 
 bool Application::checkExistingFile() {
     bool flag = true;
-    if (!exists("../res/tree")){
+    if (!exists("res/tree")){
         cout << "You have to generate tree first" << endl;
         commandHandler.printHelpTable();
         flag = false;
