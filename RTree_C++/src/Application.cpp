@@ -62,11 +62,12 @@ void Application::start() {
 }
 
 void Application::generate() {
-    tree.closeStreams();
-
     uint32_t dimension = CommandHandler::readDimension();
-    if (!dimension)
+    if (!dimension) {
         return;
+    }
+
+    tree.closeStreams();
 
     tree = RTree();
     tree.configInit(dimension);
@@ -122,7 +123,6 @@ void Application::knnSearch(int action) {
 
     vector<int32_t> queryPoint;
     if (!CommandHandler::readInputPoint(queryPoint, tree.getConfig().dimension)){
-        tree.closeStreams();
         return;
     }
     int k = CommandHandler::readNumberOfNeighbours();
